@@ -1,15 +1,16 @@
 const Clinic = require("../models/clinicModel");
 
-const create = async(req, res) => {
+const create = async (req, res) => {
     let body = req.body;
     let userId = req.user.id;
+    let directorId = req.query.idDirector;
 
-    if(!body.ruc || !body.name || !body.description || !body.startDate || !body.phoneNumber){
+    if (!body.ruc || !body.name || !body.description || !body.startDate || !body.phoneNumber) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
         });
-    } 
+    }
 
     let bodyClinic = {
         ruc: body.ruc,
@@ -18,12 +19,13 @@ const create = async(req, res) => {
         user: userId,
         startDate: body.startDate,
         phoneNumber: body.phoneNumber,
+        director: directorId
     }
 
     try {
-        const clinics = await Clinic.find({$or: [{ruc: bodyClinic.ruc.toLowerCase()}]});
+        const clinics = await Clinic.find({ $or: [{ ruc: bodyClinic.ruc.toLowerCase() }] });
 
-        if (clinics && clinics.length >= 1){
+        if (clinics && clinics.length >= 1) {
             return res.status(200).json({
                 "status": "success",
                 "message": "The clinic already exists"
@@ -35,7 +37,7 @@ const create = async(req, res) => {
         try {
             const clinicStored = await clinic_to_save.save();
 
-            if(!clinicStored){
+            if (!clinicStored) {
                 return res.status(500).json({
                     "status": "error",
                     "message": "No clinic found"
@@ -47,7 +49,7 @@ const create = async(req, res) => {
                 "message": "Clinic registered",
                 "clinic": clinicStored
             });
-        } catch (error){
+        } catch (error) {
             return res.status(500).json({
                 "status": "error",
                 "message": "Error while saving clinic",
@@ -65,8 +67,8 @@ const create = async(req, res) => {
 const myClinic = (req, res) => {
     let userId = req.user.id;
 
-    Clinic.find({user: userId}).then( clinic => {
-        if(!clinic) {
+    Clinic.find({ user: userId }).populate("director").then(clinic => {
+        if (!clinic) {
             return res.status(404).json({
                 status: "Error",
                 message: "No clinic avaliable..."
@@ -77,15 +79,82 @@ const myClinic = (req, res) => {
             "status": "success",
             clinic
         });
-    }).catch( () => {
+    }).catch(() => {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while searching tha clinic"
+            "message": "Error while searching the clinic"
         });
     });
 }
 
+const list = (req, res) => {
+    Clinic.find().populate("director").sort('_id').then(clinics => {
+        if (!clinics) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No clinics avaliable..."
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            clinics
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const clinicById = (req, res) => {
+    Clinic.findById(req.query.idClinic).then(clinic => {
+        if (!clinic) {
+            return res.status(404).json({
+                "status": "error",
+                "message": "Clinic doesn't exist"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            "clinic": clinic
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            "status": "error",
+            "message": "Error while searching clinic"
+        });
+    });
+}
+
+const editClinic = (req, res) => {
+    let id = req.query.idClinic;
+
+    Clinic.findOneAndUpdate({ _id: id }, req.body, { new: true }).then((clinicUpdated) => {
+        if (!clinicUpdated) {
+            return res.status(404).json({
+                status: "error",
+                mensaje: "Clinic not found"
+            })
+        }
+        return res.status(200).send({
+            status: "success",
+            clinic: clinicUpdated
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            status: "error",
+            mensaje: "Error while updating"
+        })
+    })
+}
+
 module.exports = {
     create,
-    myClinic
+    myClinic,
+    list,
+    clinicById,
+    editClinic
 }

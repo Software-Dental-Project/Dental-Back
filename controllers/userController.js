@@ -154,9 +154,31 @@ const userById = (req, res) => {
     });
 }
 
+const getAll = (req, res) => {
+    User.find().sort('_id').then(users => {
+        if (!users) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No users avaliable"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            users
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 module.exports = {
     register,
     login,
     profile,
-    userById
+    userById,
+    getAll
 }

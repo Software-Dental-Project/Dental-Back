@@ -24,8 +24,12 @@ const ClinicSchema = Schema({
     phoneNumber: {
         type: String,
         required: true
+    },
+    director: {
+        type: Schema.ObjectId,
+        ref: "PersonData"
     }
-    //pendiente poner: Imagen y Dni de director (id de DatosPersona)
+    //pendiente poner: Imagen
 });
 
 module.exports = model("Clinic", ClinicSchema, "clinics");
