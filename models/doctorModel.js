@@ -12,7 +12,11 @@ const DoctorSchema = Schema({
     speciality: {
         type: Schema.ObjectId,
         ref: "Speciality"
-    }
+    },
+    user: {
+        type: Schema.ObjectId,
+        ref: "User"
+    },
 });
 
 module.exports = model("Doctor", DoctorSchema, "doctors");
