@@ -22,12 +22,14 @@ const PersonDataRoutes = require("./routes/personDataRoutes");
 const CampusRoutes = require("./routes/campusRoutes");
 const SpecialityRoutes = require("./routes/specialityRoutes");
 const DoctorRoutes = require("./routes/doctorRoutes");
+const CampusDoctorRoutes = require("./routes/campusDoctorRoutes");
 app.use("/api/users", UserRoutes);
 app.use("/api/clinics", ClinicRoutes);
 app.use("/api/personData", PersonDataRoutes);
 app.use("/api/campuses", CampusRoutes);
 app.use("/api/specialities", SpecialityRoutes);
 app.use("/api/doctors", DoctorRoutes);
+app.use("/api/campusesdoctors", CampusDoctorRoutes);
 
 app.get("/test-route", (req, res) => {
     return res.status(200).json({

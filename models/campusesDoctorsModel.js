@@ -1,6 +1,6 @@
 const {Schema, model} = require("mongoose");
 
-const  CampusDoctorSchema = Schema({
+const  CampusesDoctorsSchema = Schema({
     campus: {
         type: Schema.ObjectId,
         ref: "Campus"
@@ -19,4 +19,4 @@ const  CampusDoctorSchema = Schema({
     }
 });
 
-module.exports = model("CampusDoctor", CampusDoctorSchema, "campus-doctors");
+module.exports = model("CampusesDoctors", CampusesDoctorsSchema, "campuses-doctors");
