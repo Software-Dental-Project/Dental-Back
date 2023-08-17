@@ -39,5 +39,5 @@ app.get("/test-route", (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log("Node server running in port:", port)
+    console.log("Node server running in port:", port);
 });

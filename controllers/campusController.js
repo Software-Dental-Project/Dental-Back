@@ -62,7 +62,7 @@ const create = async (req, res) => {
     } catch {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while finding campus"
+            "message": "Error while finding campus duplicate"
         });
     }
 }
@@ -82,10 +82,10 @@ const myCampus = (req, res) => {
             "status": "success",
             campus
         });
-    }).catch(() => {
+    }).catch(error => {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while searching the campus"
+            error
         });
     });
 }
@@ -127,7 +127,7 @@ const campusById = (req, res) => {
     }).catch(() => {
         return res.status(404).json({
             "status": "error",
-            "message": "Error while searching campus"
+            "message": "Error while finding campus"
         });
     });
 }
@@ -135,7 +135,7 @@ const campusById = (req, res) => {
 const editCampus = (req, res) => {
     let id = req.query.idCampus;
 
-    Campus.findOneAndUpdate({ _id: id }, req.body, { new: true }).then((campusUpdated) => {
+    Campus.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(campusUpdated => {
         if (!campusUpdated) {
             return res.status(404).json({
                 status: "error",
@@ -149,12 +149,12 @@ const editCampus = (req, res) => {
     }).catch(() => {
         return res.status(404).json({
             status: "error",
-            mensaje: "Error while updating"
+            mensaje: "Error while finding and updating campus"
         });
     });
 }
 
-const campusByClinic = (req, res) => {
+const getByClinicId = (req, res) => {
     let clinicId = req.query.idClinic;
 
     Campus.find({ clinic: clinicId }).sort('_id').then(campuses => {
@@ -183,5 +183,5 @@ module.exports = {
     list,
     campusById,
     editCampus,
-    campusByClinic
+    getByClinicId
 }

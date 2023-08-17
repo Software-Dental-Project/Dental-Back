@@ -52,7 +52,7 @@ const create = async (req, res) => {
     } catch {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while finding speciality"
+            "message": "Error while finding speciality duplicate"
         });
     }
 }

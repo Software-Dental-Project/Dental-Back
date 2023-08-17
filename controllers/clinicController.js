@@ -40,7 +40,7 @@ const create = async (req, res) => {
             if (!clinicStored) {
                 return res.status(500).json({
                     "status": "error",
-                    "message": "No clinic found"
+                    "message": "No clinic saved"
                 });
             }
 
@@ -59,7 +59,7 @@ const create = async (req, res) => {
     } catch {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while finding clinic"
+            "message": "Error while finding clinic duplicate"
         });
     }
 }
@@ -79,10 +79,10 @@ const myClinic = (req, res) => {
             "status": "success",
             clinic
         });
-    }).catch(() => {
+    }).catch(error => {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while searching the clinic"
+            error
         });
     });
 }
@@ -124,7 +124,7 @@ const clinicById = (req, res) => {
     }).catch(() => {
         return res.status(404).json({
             "status": "error",
-            "message": "Error while searching clinic"
+            "message": "Error while finding clinic"
         });
     });
 }
@@ -132,12 +132,12 @@ const clinicById = (req, res) => {
 const editClinic = (req, res) => {
     let id = req.query.idClinic;
 
-    Clinic.findOneAndUpdate({ _id: id }, req.body, { new: true }).then((clinicUpdated) => {
+    Clinic.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(clinicUpdated => {
         if (!clinicUpdated) {
             return res.status(404).json({
                 status: "error",
                 mensaje: "Clinic not found"
-            })
+            });
         }
         return res.status(200).send({
             status: "success",
@@ -146,9 +146,9 @@ const editClinic = (req, res) => {
     }).catch(() => {
         return res.status(404).json({
             status: "error",
-            mensaje: "Error while updating"
-        })
-    })
+            mensaje: "Error while finding and updating clinic"
+        });
+    });
 }
 
 module.exports = {

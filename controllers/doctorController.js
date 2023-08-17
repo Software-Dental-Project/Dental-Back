@@ -38,7 +38,7 @@ const create = async (req, res) => {
             if (!doctorStored) {
                 return res.status(500).json({
                     "status": "error",
-                    "message": "No doctor found"
+                    "message": "No doctor saved"
                 });
             }
 
@@ -57,7 +57,7 @@ const create = async (req, res) => {
     } catch {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while finding doctor"
+            "message": "Error while finding doctor duplicate"
         });
     }
 }
@@ -77,10 +77,10 @@ const myDoctor = (req, res) => {
             "status": "success",
             doctor
         });
-    }).catch(() => {
+    }).catch(error => {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while searching the doctor"
+            error
         });
     });
 }
@@ -122,7 +122,7 @@ const doctorById = (req, res) => {
     }).catch(() => {
         return res.status(404).json({
             "status": "error",
-            "message": "Error while searching doctor"
+            "message": "Error while finding doctor"
         });
     });
 }

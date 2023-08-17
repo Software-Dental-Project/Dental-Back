@@ -5,7 +5,7 @@ const libjwt = require("../authorization/jwt");
 const secret = libjwt.secret;
 
 exports.auth = (req, res, next) => {
-    if(!req.headers.authorization){
+    if (!req.headers.authorization) {
         return res.status(403).json({
             "status": "error",
             "message": "Request doesn't have auth header"
@@ -17,15 +17,15 @@ exports.auth = (req, res, next) => {
     try {
         let payLoad = jwt.decode(token, secret);
 
-        if (payLoad.exp <= moment().unix()){
+        if (payLoad.exp <= moment().unix()) {
             return res.status(401).json({
                 "status": "error",
                 "message": "Token expired"
             });
         }
-        
+
         req.user = payLoad;
-    } catch(error){
+    } catch (error) {
         return res.status(404).json({
             "status": "error",
             "message": "Invalid token"

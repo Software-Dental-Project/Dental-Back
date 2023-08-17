@@ -9,6 +9,6 @@ router.get("/myCampus", check.auth, CampusController.myCampus);
 router.get("/list", CampusController.list);
 router.get("/", CampusController.campusById);
 router.put("/", CampusController.editCampus);
-router.get("/clinic", CampusController.campusByClinic);
+router.get("/clinic", CampusController.getByClinicId);
 
 module.exports = router;

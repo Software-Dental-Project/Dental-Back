@@ -56,7 +56,7 @@ const create = async (req, res) => {
     } catch {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while finding campus and doctor"
+            "message": "Error while finding campus and doctor duplicate"
         });
     }
 }

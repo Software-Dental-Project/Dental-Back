@@ -3,10 +3,10 @@ const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("../authorization/jwt");
 
-const register = async(req, res) => {
+const register = async (req, res) => {
     let userBody = req.body;
 
-    if(!userBody.email || !userBody.password ){
+    if (!userBody.email || !userBody.password) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -19,12 +19,12 @@ const register = async(req, res) => {
     }
 
     try {
-        const userAlreadyExist = await User.find({ $or: [{email: userData.email.toLowerCase()}]});
+        const userAlreadyExist = await User.find({ $or: [{ email: userData.email.toLowerCase() }] });
 
-        if (userAlreadyExist && userAlreadyExist.length >= 1){
+        if (userAlreadyExist && userAlreadyExist.length >= 1) {
             return res.status(200).json({
                 "status": "success",
-                "message": "The driver already exists"
+                "message": "The user already exists"
             });
         }
 
@@ -32,13 +32,14 @@ const register = async(req, res) => {
         userData.password = pwd;
 
         let user_to_save = new User(userData);
+
         try {
             const userStored = await user_to_save.save();
-    
-            if(!userStored){
+
+            if (!userStored) {
                 return res.status(500).json({
                     "status": "error",
-                    "message": "Couldn't save user"
+                    "message": "No user saved"
                 });
             }
 
@@ -57,32 +58,32 @@ const register = async(req, res) => {
     } catch {
         return res.status(500).json({
             "status": "error",
-            "message": "Error finding if user already exists"
+            "message": "Error while finding user duplicate"
         });
-    }        
+    }
 }
 
 const login = (req, res) => {
     const body = req.body;
 
-    if(!body.email || !body.password){
+    if (!body.email || !body.password) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
         });
     }
 
-    User.findOne({email: body.email}).then( user =>{
-        if(!user){
+    User.findOne({ email: body.email }).then(user => {
+        if (!user) {
             return res.status(400).json({
                 "status": "error",
-                "message": "Driver doesn't exist"
+                "message": "User doesn't exist"
             });
         }
 
         let pwd = bcrypt.compareSync(body.password, user.password);
 
-        if(!pwd){
+        if (!pwd) {
             return res.status(400).json({
                 "status": "error",
                 "message": "Passwords doesn't match"
@@ -90,7 +91,7 @@ const login = (req, res) => {
         }
 
         const token = jwt.createToken(user);
-        
+
         const role = user.email.charAt(0) === 'c' ? "Clinica" : user.email.charAt(0) === 's' ? "Sede" : "Rol desconocido";
 
         return res.status(200).json({
@@ -104,17 +105,17 @@ const login = (req, res) => {
             role
         });
 
-    }).catch( error => {
+    }).catch(() => {
         return res.status(400).json({
             "status": "error",
-            "message": "Error un authorization"
+            "message": "Error while finding user"
         });
     });
 }
 
 const profile = (req, res) => {
-    User.findById(req.user.id).select({password: 0}).then(user => {
-        if(!user){
+    User.findById(req.user.id).select({ password: 0 }).then(user => {
+        if (!user) {
             return res.status(404).json({
                 "status": "error",
                 "message": "User doesn't exist"
@@ -125,17 +126,17 @@ const profile = (req, res) => {
             "status": "success",
             "user": user
         });
-    }).catch( () => {
+    }).catch(() => {
         return res.status(404).json({
             "status": "error",
-            "message": "Error while getting object"
+            "message": "Error while finding user"
         });
     });
 }
 
 const userById = (req, res) => {
-    User.findById(req.params.id).then(user => {
-        if(!user){
+    User.findById(req.query.idUser).then(user => {
+        if (!user) {
             return res.status(404).json({
                 "status": "error",
                 "message": "User doesn't exist"
@@ -146,20 +147,20 @@ const userById = (req, res) => {
             "status": "success",
             "user": user
         });
-    }).catch( () => {
+    }).catch(() => {
         return res.status(404).json({
             "status": "error",
-            "message": "Error while searching user"
+            "message": "Error while finding user"
         });
     });
 }
 
-const getAll = (req, res) => {
+const list = (req, res) => {
     User.find().sort('_id').then(users => {
         if (!users) {
             return res.status(404).json({
                 status: "Error",
-                message: "No users avaliable"
+                message: "No users avaliable..."
             });
         }
 
@@ -180,5 +181,5 @@ module.exports = {
     login,
     profile,
     userById,
-    getAll
+    list
 }
