@@ -23,6 +23,12 @@ const CampusRoutes = require("./routes/campusRoutes");
 const SpecialityRoutes = require("./routes/specialityRoutes");
 const DoctorRoutes = require("./routes/doctorRoutes");
 const CampusDoctorRoutes = require("./routes/campusDoctorRoutes");
+const PatientsRoutes = require("./routes/patientRoutes");
+const ConsultationRoutes = require("./routes/consultationRoutes");
+const ConsultationResultRoutes = require("./routes/consultationResultRoutes");
+const TreatmentRoutes = require("./routes/treatmentRoutes");
+const TreatmentDetailRoutes = require("./routes/treatmentDetailRoutes");
+const TreatmentAppointmentRoutes = require("./routes/treatmentAppointmentRoutes");
 app.use("/api/users", UserRoutes);
 app.use("/api/clinics", ClinicRoutes);
 app.use("/api/personData", PersonDataRoutes);
@@ -30,6 +36,12 @@ app.use("/api/campuses", CampusRoutes);
 app.use("/api/specialities", SpecialityRoutes);
 app.use("/api/doctors", DoctorRoutes);
 app.use("/api/campusesdoctors", CampusDoctorRoutes);
+app.use("/api/patients", PatientsRoutes);
+app.use("/api/consultations", ConsultationRoutes);
+app.use("/api/copnsultationResults", ConsultationResultRoutes);
+app.use("/api/treatments", TreatmentRoutes);
+app.use("/api/treatmentDetails", TreatmentDetailRoutes);
+app.use("/api/treatmentAppointments", TreatmentAppointmentRoutes);
 
 app.get("/test-route", (req, res) => {
     return res.status(200).json({
