@@ -23,7 +23,7 @@ const create = async (req, res) => {
 
         return res.status(200).json({
             "status": "success",
-            "message": "Doctor registered",
+            "message": "Patient registered",
             "patient": patientStored
         });
     } catch (error) {
@@ -80,7 +80,7 @@ const list = (req, res) => {
 }
 
 const patientById = (req, res) => {
-    Patient.findById(req.query.idPatient).then(patient => {
+    Patient.findById(req.query.idPatient).populate("personData").then(patient => {
         if (!patient) {
             return res.status(404).json({
                 "status": "error",
@@ -100,9 +100,36 @@ const patientById = (req, res) => {
     });
 }
 
+const searchPatient = (req, res) => {
+    Patient.find().populate({
+        path: 'personData',
+        match: { names: { $regex: req.query.patientName, $options: 'i' } }
+      }).then(patients => {
+        if (!patients) {
+            return res.status(404).json({
+                "status": "error",
+                "message": "Patient doesn't exist"
+            });
+        }
+
+        patients = patients.filter(patient => patient.personData);
+
+        return res.status(200).json({
+            "status": "success",
+            "patient": patients
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            "status": "error",
+            "message": "Error while finding patient"
+        });
+    });
+}
+
 module.exports = {
     create,
     myPatient,
     list,
-    patientById
+    patientById,
+    searchPatient
 }

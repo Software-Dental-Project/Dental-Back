@@ -70,7 +70,7 @@ const create = async (req, res) => {
 const myCampus = (req, res) => {
     let userId = req.user.id;
 
-    Campus.find({ user: userId }).then(campus => {
+    Campus.findOne({ user: userId }).then(campus => {
         if (!campus) {
             return res.status(404).json({
                 status: "Error",

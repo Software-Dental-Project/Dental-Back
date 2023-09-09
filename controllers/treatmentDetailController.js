@@ -4,7 +4,7 @@ const create = async (req, res) => {
     let body = req.body;
     let consultationResultId = req.query.idConsultationResult;
 
-    if (!body.description || !body.initialCost || !body.finalCost || !body.startDate || !body.endDate) {
+    if (!body.description || !body.initialCost || !body.finalCost || !body.endDate) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"

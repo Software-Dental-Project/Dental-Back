@@ -22,6 +22,18 @@ const ConsultationSchema = Schema({
         required: true
     },
     date: {
+        type: Date,
+        default: Date.now
+    },
+    status: {
+        type: String,
+        required: true
+    },
+    hourScheduled: {
+        type: String,
+        required: true
+    },
+    hourAssisted: {
         type: String,
         required: true
     }

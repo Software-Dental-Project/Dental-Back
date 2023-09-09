@@ -67,7 +67,7 @@ const create = async (req, res) => {
 const myClinic = (req, res) => {
     let userId = req.user.id;
 
-    Clinic.find({ user: userId }).populate("director").then(clinic => {
+    Clinic.findOne({ user: userId }).populate("director").then(clinic => {
         if (!clinic) {
             return res.status(404).json({
                 status: "Error",

@@ -4,7 +4,7 @@ const create = async (req, res) => {
     let body = req.body;
     let treatmentDetailId = req.query.idTreatmentDetail;
 
-    if (!body.description || !body.date) {
+    if (!body.description) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -44,7 +44,7 @@ const create = async (req, res) => {
 }
 
 const list = (req, res) => {
-    TreatmentAppointment.find().populate("treatmentDetails").sort('_id').then(treatmentAppointments => {
+    TreatmentAppointment.find().populate("treatmentDetail").sort('_id').then(treatmentAppointments => {
         if (!treatmentAppointments) {
             return res.status(404).json({
                 status: "Error",
@@ -108,9 +108,58 @@ const getByTreatmentDetailId = (req, res) => {
     });
 }
 
+const myTreatmentAppointmentsByCampus = async (req, res) => {
+    let userEmail = req.user.email;
+
+    TreatmentAppointment.find({ status: "Scheduled" }).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { email: { $regex: userEmail, $options: 'i' } } } }, { path: "treatmentDetail", populate: { path: "consultationResult", populate: { path: "consultation", populate: { path: "patient", populate: { path: "personData" } } } } } ]).sort('hourScheduled').then(treatmentAppointments => {
+        if (!treatmentAppointments) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No consultation avaliable..."
+            });
+        }
+
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.user);
+
+        return res.status(200).json({
+            "status": "success",
+            treatmentAppointments
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const editTreatmentAppointment = (req, res) => {
+    let id = req.query.idTreatmentAppointment;
+
+    TreatmentAppointment.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(treatmentAppointmentUpdated => {
+        if (!treatmentAppointmentUpdated) {
+            return res.status(404).json({
+                status: "error",
+                mensaje: "Treatment Appointment not found"
+            });
+        }
+        return res.status(200).send({
+            status: "success",
+            treatmentAppointment: treatmentAppointmentUpdated
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            status: "error",
+            mensaje: "Error while finding and updating treatment appointment"
+        });
+    });
+}
+
 module.exports = {
     create,
     list,
     treatmentAppointmentById,
-    getByTreatmentDetailId
+    getByTreatmentDetailId,
+    myTreatmentAppointmentsByCampus,
+    editTreatmentAppointment
 }

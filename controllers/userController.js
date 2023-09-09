@@ -13,9 +13,12 @@ const register = async (req, res) => {
         });
     }
 
+    const role = userBody.email.charAt(0) === 'c' ? "Clinica" : userBody.email.charAt(0) === 's' ? "Sede" : userBody.email.charAt(0) === 'd' ? "Doctor" : userBody.email.charAt(0) === 'p' ? "Paciente": "Rol desconocido";
+
     let userData = {
         email: userBody.email,
         password: userBody.password,
+        role: role
     }
 
     try {
@@ -92,17 +95,15 @@ const login = (req, res) => {
 
         const token = jwt.createToken(user);
 
-        const role = user.email.charAt(0) === 'c' ? "Clinica" : user.email.charAt(0) === 's' ? "Sede" : "Rol desconocido";
-
         return res.status(200).json({
             "status": "success",
             "message": "You have identified correctly",
             user: {
                 id: user._id,
-                email: user.email
+                email: user.email,
+                role: user.role
             },
-            token,
-            role
+            token
         });
 
     }).catch(() => {

@@ -18,12 +18,11 @@ const TreatmentDetailSchema = Schema({
         required: true
     },
     startDate: {
-        type: String,
-        required: true
+        type: Date,
+        default: Date.now
     },
     endDate: {
-        type: String,
-        required: true
+        type: Date
     }
 });
 

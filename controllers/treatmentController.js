@@ -3,7 +3,7 @@ const Treatment = require("../models/treatmentModel");
 const create = async (req, res) => {
     let body = req.body;
 
-    if (!body.name || !body.description || !body.averageCost) {
+    if (!body.name || !body.description) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -12,8 +12,7 @@ const create = async (req, res) => {
 
     let bodyTreatment = {
         name: body.name,
-        description: body.description,
-        averageCost: body.phoneNaverageCostumber
+        description: body.description
     }
 
     try {

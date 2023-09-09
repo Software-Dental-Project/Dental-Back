@@ -8,10 +8,6 @@ const TreatmentSchema = Schema({
     description: {
         type: String,
         required: true
-    },
-    averageCost: {
-        type: String,
-        required: true
     }
 });
 

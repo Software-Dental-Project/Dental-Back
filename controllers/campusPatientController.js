@@ -1,4 +1,5 @@
 const CampusesPatients = require("../models/campusesPatientsModel");
+const Campus = require("../models/campusModel");
 
 const create = async (req, res) => {
     let body = req.body;
@@ -105,6 +106,82 @@ const getByCampusId = (req, res) => {
     });
 }
 
+const getByMyCampus = async (req, res) => {
+    let userEmail = req.user.email;
+
+    CampusesPatients.find().populate([{ path: "patient", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { email: { $regex: userEmail, $options: 'i' } } } }]).sort('_id').then(campusesPatients => {
+        if (!campusesPatients) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No campusesPatients avaliable..."
+            });
+        }
+
+        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.campus.user);
+
+        return res.status(200).json({
+            "status": "success",
+            campusesPatients
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const searchPatientsByMyCampus = async (req, res) => {
+    let userId = req.user.id;
+    let campusId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        campusId = campus._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    CampusesPatients.find({ campus: campusId }).populate({
+        path: 'patient',
+        populate: {
+          path: 'personData',
+          match: { names: { $regex: req.query.patientName, $options: 'i' } } 
+        }
+    }).sort('_id').then(campusesPatients => {
+        if (!campusesPatients) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No campusesPatients avaliable..."
+            });
+        }
+
+        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.patient.personData);
+
+        return res.status(200).json({
+            "status": "success",
+            campusesPatients
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const getByPatientId = (req, res) => {
     let patientId = req.query.idPatient;
 
@@ -132,5 +209,7 @@ module.exports = {
     create,
     list,
     getByCampusId,
+    getByMyCampus,
+    searchPatientsByMyCampus,
     getByPatientId
 }
