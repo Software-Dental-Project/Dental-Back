@@ -1,5 +1,7 @@
 const Consultation = require("../models/consultationModel");
 const Campus = require("../models/campusModel");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
     let body = req.body;
@@ -114,22 +116,68 @@ const consultationById = (req, res) => {
     });
 }
 
-const myConsultationByPatient = (req, res) => {
-    let userEmail = req.user.email;
+const consultationByIdPatient = (req, res) => {
+    let patientId = req.query.idPatient;
 
-    Consultation.find().populate(["campus", { path: "doctor", populate: { path: "personData" } }, { path: "patient", populate: [{ path: "user", match: { email: { $regex: userEmail, $options: 'i' } } }, { path: "personData" }] }]).then(consultation => {
-        if (!consultation) {
+    Consultation.find({ patient: patientId }).sort('startDate').then(consultations => {
+        if (!consultations) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No consultations avaliable..."
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            consultations
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const consultationByIdDoctor = (req, res) => {
+    let doctorId = req.query.idDoctor;
+
+    Consultation.find({ doctor: doctorId }).populate([{ path: "patient", populate: {path: "personData"}}]).sort('startDate').then(consultations => {
+        if (!consultations) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No consultations avaliable..."
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            consultations
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const myConsultationByPatient = (req, res) => {
+    let userId = new ObjectId(req.user.id);
+
+    Consultation.find().populate(["campus", { path: "doctor", populate: { path: "personData" } }, { path: "patient", populate: [{ path: "user", match: { _id: userId } }, { path: "personData" }] }]).then(consultations => {
+        if (!consultations) {
             return res.status(404).json({
                 status: "Error",
                 message: "No consultation avaliable..."
             });
         }
 
-        consultation = consultation.filter(consultation => consultation.patient.user);
+        consultations = consultations.filter(consultation => consultation.patient.user);
 
         return res.status(200).json({
             "status": "success",
-            consultation
+            consultations
         });
     }).catch(error => {
         return res.status(500).json({
@@ -140,21 +188,21 @@ const myConsultationByPatient = (req, res) => {
 }
 
 const myConsultationByDoctor = (req, res) => {
-    let userEmail = req.user.email;
+    let userId = new ObjectId(req.user.id);
 
-    Consultation.find().populate(["campus", { path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: [{ path: "user", match: { email: { $regex: userEmail, $options: 'i' } } }, { path: "personData" }] }]).then(consultation => {
-        if (!consultation) {
+    Consultation.find().populate(["campus", { path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: [{ path: "user", match: { _id: userId } }, { path: "personData" }] }]).then(consultations => {
+        if (!consultations) {
             return res.status(404).json({
                 status: "Error",
                 message: "No consultation avaliable..."
             });
         }
 
-        consultation = consultation.filter(consultation => consultation.doctor.user);
+        consultations = consultations.filter(consultation => consultation.doctor.user);
 
         return res.status(200).json({
             "status": "success",
-            consultation
+            consultations
         });
     }).catch(error => {
         return res.status(500).json({
@@ -164,10 +212,10 @@ const myConsultationByDoctor = (req, res) => {
     });
 }
 
-const myConsultationByCampus = async (req, res) => {
-    let userEmail = req.user.email;
+const myConsultationByCampus = (req, res) => {
+    let userId = new ObjectId(req.user.id);
 
-    Consultation.find({ status: "Scheduled" }).populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { email: { $regex: userEmail, $options: 'i' } } } }]).sort('hourScheduled').then(consultations => {
+    Consultation.find({ status: "Scheduled" }).populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('hourScheduled').then(consultations => {
         if (!consultations) {
             return res.status(404).json({
                 status: "Error",
@@ -215,6 +263,8 @@ module.exports = {
     create,
     list,
     consultationById,
+    consultationByIdPatient,
+    consultationByIdDoctor,
     myConsultationByPatient,
     myConsultationByDoctor,
     myConsultationByCampus,

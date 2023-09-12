@@ -62,6 +62,66 @@ const create = async (req, res) => {
     }
 }
 
+const createWithoutUser = async (req, res) => {
+    let body = req.body;
+    let personDataId = req.query.idPersonData;
+    let specialityId = req.query.idSpeciality;
+
+    if (!body.tuitionNumber) {
+        return res.status(400).json({
+            "status": "error",
+            "message": "Missing data"
+        });
+    }
+
+    let bodyDoctor = {
+        personData: personDataId,
+        tuitionNumber: body.tuitionNumber,
+        speciality: specialityId
+    }
+
+    try {
+        const doctors = await Doctor.find({ $or: [{ tuitionNumber: bodyDoctor.tuitionNumber.toLowerCase() }] });
+
+        if (doctors && doctors.length >= 1) {
+            return res.status(200).json({
+                "status": "success",
+                "message": "The doctor already exists"
+            });
+        }
+
+        let doctor_to_save = new Doctor(bodyDoctor);
+
+        try {
+            const doctorStored = await doctor_to_save.save();
+
+            if (!doctorStored) {
+                return res.status(500).json({
+                    "status": "error",
+                    "message": "No doctor saved"
+                });
+            }
+
+            return res.status(200).json({
+                "status": "success",
+                "message": "Doctor registered",
+                "doctor": doctorStored
+            });
+        } catch (error) {
+            return res.status(500).json({
+                "status": "error",
+                "message": "Error while saving doctor",
+                error
+            });
+        }
+    } catch {
+        return res.status(500).json({
+            "status": "error",
+            "message": "Error while finding doctor duplicate"
+        });
+    }
+}
+
 const myDoctor = (req, res) => {
     let userId = req.user.id;
 
@@ -107,7 +167,7 @@ const list = (req, res) => {
 }
 
 const doctorById = (req, res) => {
-    Doctor.findById(req.query.idDoctor).then(doctor => {
+    Doctor.findById(req.query.idDoctor).populate(["personData", "speciality"]).then(doctor => {
         if (!doctor) {
             return res.status(404).json({
                 "status": "error",
@@ -129,6 +189,7 @@ const doctorById = (req, res) => {
 
 module.exports = {
     create,
+    createWithoutUser,
     myDoctor,
     list,
     doctorById

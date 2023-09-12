@@ -35,6 +35,39 @@ const create = async (req, res) => {
     }
 }
 
+const createWithoutUser = async (req, res) => {
+    let personDataId = req.query.idPersonData;
+
+    let bodyPatient = {
+        personData: personDataId
+    }
+
+    let patient_to_save = new Patient(bodyPatient);
+
+    try {
+        const patientStored = await patient_to_save.save();
+
+        if (!patientStored) {
+            return res.status(500).json({
+                "status": "error",
+                "message": "No patient saved"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            "message": "Patient registered",
+            "patient": patientStored
+        });
+    } catch (error) {
+        return res.status(500).json({
+            "status": "error",
+            "message": "Error while saving patient",
+            error
+        });
+    }
+}
+
 const myPatient = (req, res) => {
     let userId = req.user.id;
 
@@ -126,10 +159,34 @@ const searchPatient = (req, res) => {
     });
 }
 
+const editPatient = (req, res) => {
+    let id = req.query.idPatient;
+
+    Patient.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(patientUpdated => {
+        if (!patientUpdated) {
+            return res.status(404).json({
+                status: "error",
+                mensaje: "Patient not found"
+            });
+        }
+        return res.status(200).send({
+            status: "success",
+            patient: patientUpdated
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            status: "error",
+            mensaje: "Error while finding and updating patient"
+        });
+    });
+}
+
 module.exports = {
     create,
+    createWithoutUser,
     myPatient,
     list,
     patientById,
-    searchPatient
+    searchPatient,
+    editPatient
 }

@@ -1,4 +1,8 @@
 const TreatmentAppointment = require("../models/treatmentAppointmentsModel");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+
+const middlewareService = require("../services/group");
 
 const create = async (req, res) => {
     let body = req.body;
@@ -108,10 +112,64 @@ const getByTreatmentDetailId = (req, res) => {
     });
 }
 
-const myTreatmentAppointmentsByCampus = async (req, res) => {
-    let userEmail = req.user.email;
+const getByPatientId = (req, res) => {
+    let patientId = new ObjectId(req.query.idPatient);
 
-    TreatmentAppointment.find({ status: "Scheduled" }).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { email: { $regex: userEmail, $options: 'i' } } } }, { path: "treatmentDetail", populate: { path: "consultationResult", populate: { path: "consultation", populate: { path: "patient", populate: { path: "personData" } } } } } ]).sort('hourScheduled').then(treatmentAppointments => {
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, "campus", { path: "treatmentDetail", populate: { path: "consultationResult", populate: [{ path: "consultation", populate: { path: "patient", match: { _id: patientId } } }, "treatment"] } } ]).sort('_id').then(treatmentAppointments => {
+        if (!treatmentAppointments) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No treatmentAppointments avaliable..."
+            });
+        }
+
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.treatmentDetail.consultationResult.consultation.patient);
+
+        const groupedAppointments = middlewareService.groupByTreatmentDetail(treatmentAppointments);
+
+        return res.status(200).json({
+            "status": "success",
+            groupedAppointments
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const getByDoctorId = (req, res) => {
+    let doctorId = new ObjectId(req.query.idDoctor);
+
+    TreatmentAppointment.find().populate([{ path: "doctor", match: { _id: doctorId }, populate: { path: "personData"} }, "campus", { path: "treatmentDetail", populate: { path: "consultationResult", populate: [{ path: "consultation", populate: { path: "patient", populate: "personData" } }, "treatment"] } } ]).sort('_id').then(treatmentAppointments => {
+        if (!treatmentAppointments) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No treatmentAppointments avaliable..."
+            });
+        }
+
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.doctor);
+
+        const groupedAppointments = middlewareService.groupByTreatmentDetail(treatmentAppointments);
+
+        return res.status(200).json({
+            "status": "success",
+            groupedAppointments
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const myTreatmentAppointmentsByCampus = async (req, res) => {
+    let userId = new ObjectId(req.user.id);
+
+    TreatmentAppointment.find({ status: "Scheduled" }).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "consultationResult", populate: { path: "consultation", populate: { path: "patient", populate: { path: "personData" } } } } } ]).sort('hourScheduled').then(treatmentAppointments => {
         if (!treatmentAppointments) {
             return res.status(404).json({
                 status: "Error",
@@ -160,6 +218,8 @@ module.exports = {
     list,
     treatmentAppointmentById,
     getByTreatmentDetailId,
+    getByPatientId,
+    getByDoctorId,
     myTreatmentAppointmentsByCampus,
     editTreatmentAppointment
 }

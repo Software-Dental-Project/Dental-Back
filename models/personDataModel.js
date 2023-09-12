@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const PersonDataSchema = Schema({
-    country: {
+    age: {
         type: String,
         required: true
     },

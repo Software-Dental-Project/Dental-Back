@@ -3,7 +3,7 @@ const PersonData = require("../models/personDataModel");
 const create = async (req, res) => {
     let body = req.body;
 
-    if (!body.country || !body.dni || !body.genre || !body.bornDate || !body.names
+    if (!body.age || !body.dni || !body.genre || !body.bornDate || !body.names
         || !body.lastNames || !body.phoneNumber || !body.address || !body.email) {
         return res.status(400).json({
             "status": "error",
@@ -12,7 +12,7 @@ const create = async (req, res) => {
     }
 
     let bodyPersonData = {
-        country: body.country,
+        age: body.age,
         dni: body.dni,
         genre: body.genre,
         bornDate: body.bornDate,
