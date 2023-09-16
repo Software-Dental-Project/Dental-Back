@@ -5,7 +5,7 @@ const create = async (req, res) => {
     let consultationId = req.query.idConsultation;
     let treatmentId = req.query.idTreatment;
 
-    if (!body.problemFound || !body.priority || !body.initialCost || !body.discount || !body.finalCost || !body.discountValid) {
+    if (!body.problemFound || !body.priority || !body.initialCost || !body.discount || !body.finalCost) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -20,7 +20,7 @@ const create = async (req, res) => {
         initialCost: body.initialCost,
         discount: body.discount,
         finalCost: body.finalCost,
-        discountValid: body.discountValid
+        discountValid: true
     }
 
     try {
@@ -108,9 +108,9 @@ const consultationResultById = (req, res) => {
 }
 
 const getByConsultationId = (req, res) => {
-    let consultationId = req.query.idConsultation;
+    let consultationId = req.query.idConsultationResult;
 
-    ConsultationResult.find({ consultation: consultationId }).sort('priority').then(consultationResults => {
+    ConsultationResult.find({ consultation: consultationId }).populate(["treatment", { path: "consultation", populate: { path: "patient"} }]).sort('priority').then(consultationResults => {
         if (!consultationResults) {
             return res.status(404).json({
                 status: "Error",

@@ -23,7 +23,11 @@ const TreatmentDetailSchema = Schema({
     },
     endDate: {
         type: Date
-    }
+    },
+    patient: {
+        type: Schema.ObjectId,
+        ref: "Patient"
+    },
 });
 
 module.exports = model("TreatmentDetail", TreatmentDetailSchema, "treatmentDetails");

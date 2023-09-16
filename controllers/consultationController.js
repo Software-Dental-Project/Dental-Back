@@ -29,7 +29,7 @@ const create = async (req, res) => {
         });
     }
 
-    if (!body.consultationReason || !body.cost || !body.status || !body.hourScheduled || !body.hourAssisted) {
+    if (!body.consultationReason || !body.cost || !body.date || !body.hour) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -43,9 +43,8 @@ const create = async (req, res) => {
         consultationReason: body.consultationReason,
         cost: body.cost,
         date: body.date,
-        status: body.status,
-        hourScheduled: body.hourScheduled,
-        hourAssisted: body.hourAssisted
+        status: "Scheduled",
+        hour: body.hour
     }
 
     let consultation_to_save = new Consultation(bodyConsultation);
@@ -96,7 +95,7 @@ const list = (req, res) => {
 }
 
 const consultationById = (req, res) => {
-    Consultation.findById(req.query.idConsultation).then(consultation => {
+    Consultation.findById(req.query.idConsultation).populate([{ path: "patient", populate: { path: "personData" } }, {path: "doctor", populate: { path: "personData" } } ]).then(consultation => {
         if (!consultation) {
             return res.status(404).json({
                 "status": "error",
@@ -215,7 +214,7 @@ const myConsultationByDoctor = (req, res) => {
 const myConsultationByCampus = (req, res) => {
     let userId = new ObjectId(req.user.id);
 
-    Consultation.find({ status: "Scheduled" }).populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('hourScheduled').then(consultations => {
+    Consultation.find().populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('hour').then(consultations => {
         if (!consultations) {
             return res.status(404).json({
                 status: "Error",

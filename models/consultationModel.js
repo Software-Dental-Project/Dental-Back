@@ -29,11 +29,7 @@ const ConsultationSchema = Schema({
         type: String,
         required: true
     },
-    hourScheduled: {
-        type: String,
-        required: true
-    },
-    hourAssisted: {
+    hour: {
         type: String,
         required: true
     }

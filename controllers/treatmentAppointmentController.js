@@ -173,7 +173,7 @@ const myTreatmentAppointmentsByCampus = async (req, res) => {
         if (!treatmentAppointments) {
             return res.status(404).json({
                 status: "Error",
-                message: "No consultation avaliable..."
+                message: "No treatmentAppointments avaliable..."
             });
         }
 

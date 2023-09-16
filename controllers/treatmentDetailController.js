@@ -1,8 +1,11 @@
 const TreatmentDetail = require("../models/treatmentDetailModel");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
     let body = req.body;
     let consultationResultId = req.query.idConsultationResult;
+    let patientId = req.query.idPatient;
 
     if (!body.description || !body.initialCost || !body.finalCost || !body.endDate) {
         return res.status(400).json({
@@ -17,7 +20,8 @@ const create = async (req, res) => {
         initialCost: body.initialCost,
         finalCost: body.finalCost,
         startDate: body.startDate,
-        endDate: body.endDate
+        endDate: body.endDate,
+        patient: patientId
     }
 
     let treatment_detail_to_save = new TreatmentDetail(bodyTreatmentDetail);
@@ -111,6 +115,31 @@ const getByConsultationResultId = (req, res) => {
     });
 }
 
+const myTreatmentDetailsByCampus = async (req, res) => {
+    let userId = new ObjectId(req.user.id);
+
+    TreatmentDetail.find().populate([{ path: "consultationResult", populate: { path: "consultation", populate: [{ path: "campus", populate: { path: "user", match: { _id: userId } } }, {path: "doctor", populate: { path: "personData"}}] } }, {path: "patient", populate: { path: "personData"}} ]).then(treatmentDetails => {
+        if (!treatmentDetails) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No treatmentDetails avaliable..."
+            });
+        }
+
+        treatmentDetails = treatmentDetails.filter(treatmentDetail => treatmentDetail.consultationResult.consultation.campus.user);
+
+        return res.status(200).json({
+            "status": "success",
+            treatmentDetails
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const editTreatmentDetail = (req, res) => {
     let id = req.query.idTreatmentDetail;
 
@@ -138,5 +167,6 @@ module.exports = {
     list,
     treatmentDetailById,
     getByConsultationResultId,
+    myTreatmentDetailsByCampus,
     editTreatmentDetail
 }
