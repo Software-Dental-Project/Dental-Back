@@ -32,7 +32,7 @@ const create = async (req, res) => {
     if (!body.consultationReason || !body.cost || !body.date || !body.hour) {
         return res.status(400).json({
             "status": "error",
-            "message": "Missing data"
+            "message": "Faltan datos"
         });
     }
 
@@ -115,14 +115,37 @@ const consultationById = (req, res) => {
     });
 }
 
-const consultationByIdPatient = (req, res) => {
+const consultationByIdPatient = async (req, res) => {
     let patientId = req.query.idPatient;
+    let userId = req.user.id;
+    let campusId;
 
-    Consultation.find({ patient: patientId }).sort('startDate').then(consultations => {
-        if (!consultations) {
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        campusId = campus._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    Consultation.find({ campus: campusId }).populate({ path: "patient", match: { _id: patientId } }).sort('startDate').then(consultations => {
+        consultations = consultations.filter(consultation => consultation.patient);
+
+        if (consultations.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No consultations avaliable..."
+                message: "Consultas no encontradas"
             });
         }
 
@@ -138,14 +161,37 @@ const consultationByIdPatient = (req, res) => {
     });
 }
 
-const consultationByIdDoctor = (req, res) => {
+const consultationByIdDoctor = async (req, res) => {
     let doctorId = req.query.idDoctor;
+    let userId = req.user.id;
+    let campusId;
 
-    Consultation.find({ doctor: doctorId }).populate([{ path: "patient", populate: {path: "personData"}}]).sort('startDate').then(consultations => {
-        if (!consultations) {
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        campusId = campus._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    Consultation.find({ campus: campusId }).populate([{ path: "patient", populate: {path: "personData"}}, { path: "doctor", match: { _id: doctorId } }]).sort('startDate').then(consultations => {
+        consultations = consultations.filter(consultation => consultation.doctor);
+        
+        if (consultations.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No consultations avaliable..."
+                message: "Consultas no encontradas"
             });
         }
 
@@ -215,14 +261,14 @@ const myConsultationByCampus = (req, res) => {
     let userId = new ObjectId(req.user.id);
 
     Consultation.find().populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('hour').then(consultations => {
-        if (!consultations) {
+        consultations = consultations.filter(consultation => consultation.campus.user);
+        
+        if (consultations.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No consultation avaliable..."
+                message: "Consultas no encontradas"
             });
         }
-
-        consultations = consultations.filter(consultation => consultation.campus.user);
 
         return res.status(200).json({
             "status": "success",

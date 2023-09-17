@@ -107,9 +107,9 @@ const createFromCampus = async (req, res) => {
         const campusesPatients = await CampusesPatients.find({ $and: [{ campus: bodyCampusPatient.campus }, { patient: bodyCampusPatient.patient.toLowerCase() }] });
 
         if (campusesPatients && campusesPatients.length >= 1) {
-            return res.status(200).json({
+            return res.status(400).json({
                 "status": "success",
-                "message": "The campuses and patients already exists"
+                "message": "La persona ya ha sido registrada en la sede"
             });
         }
 
@@ -193,14 +193,14 @@ const getByMyCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
     CampusesPatients.find().populate([{ path: "patient", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('_id').then(campusesPatients => {
-        if (!campusesPatients) {
+        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.campus.user);
+
+        if (campusesPatients.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No campusesPatients avaliable..."
+                message: "No existen datos por el momento"
             });
         }
-
-        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.campus.user);
 
         return res.status(200).json({
             "status": "success",
@@ -237,21 +237,15 @@ const searchPatientsByMyCampus = async (req, res) => {
         });
     }
 
-    CampusesPatients.find({ campus: campusId }).populate({
-        path: 'patient',
-        populate: {
-          path: 'personData',
-          match: { names: { $regex: req.query.patientName, $options: 'i' } } 
-        }
-    }).sort('_id').then(campusesPatients => {
-        if (!campusesPatients) {
+    CampusesPatients.find({ campus: campusId }).populate({ path: 'patient', populate: { path: 'personData', match: { names: { $regex: req.query.patientName, $options: 'i' } } } }).sort('_id').then(campusesPatients => {
+        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.patient.personData);
+        
+        if (campusesPatients.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No campusesPatients avaliable..."
+                message: "Paciente/pacientes no encontrados"
             });
         }
-
-        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.patient.personData);
 
         return res.status(200).json({
             "status": "success",

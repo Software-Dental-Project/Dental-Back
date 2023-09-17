@@ -7,7 +7,7 @@ const create = async (req, res) => {
         || !body.lastNames || !body.phoneNumber || !body.address || !body.email) {
         return res.status(400).json({
             "status": "error",
-            "message": "Missing data"
+            "message": "Faltan datos"
         });
     }
 
@@ -27,9 +27,9 @@ const create = async (req, res) => {
         const people = await PersonData.find({ $or: [{ dni: bodyPersonData.dni.toLowerCase() }] });
 
         if (people && people.length >= 1) {
-            return res.status(200).json({
+            return res.status(400).json({
                 "status": "success",
-                "message": "The person already exists"
+                "message": "La persona ya ha sido registrada"
             });
         }
 
@@ -45,11 +45,7 @@ const create = async (req, res) => {
                 });
             }
 
-            return res.status(200).json({
-                "status": "success",
-                "message": "Person registered",
-                "personData": personStored
-            });
+            return res.status(200).json(personStored);
         } catch (error) {
             return res.status(500).json({
                 "status": "error",

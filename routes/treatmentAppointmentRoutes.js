@@ -8,8 +8,8 @@ router.post("/", TreatmentAppointmentController.create);
 router.get("/list", TreatmentAppointmentController.list);
 router.get("/", TreatmentAppointmentController.treatmentAppointmentById);
 router.get("/treatmentDetail", TreatmentAppointmentController.getByTreatmentDetailId);
-router.get("/patient", TreatmentAppointmentController.getByPatientId);
-router.get("/doctor", TreatmentAppointmentController.getByDoctorId);
+router.get("/patient", check.auth, TreatmentAppointmentController.getByPatientId);
+router.get("/doctor", check.auth, TreatmentAppointmentController.getByDoctorId);
 router.get("/myTreatmentAppointmentsByCampus", check.auth, TreatmentAppointmentController.myTreatmentAppointmentsByCampus);
 router.put("/", TreatmentAppointmentController.editTreatmentAppointment);
 

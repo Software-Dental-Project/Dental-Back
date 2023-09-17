@@ -107,9 +107,9 @@ const createFromCampus = async (req, res) => {
         const campusesDoctors = await CampusesDoctors.find({ $and: [{ campus: bodyCampusDoctor.campus }, { doctor: bodyCampusDoctor.doctor.toLowerCase() }] });
 
         if (campusesDoctors && campusesDoctors.length >= 1) {
-            return res.status(200).json({
+            return res.status(400).json({
                 "status": "success",
-                "message": "The campuses and doctors already exists"
+                "message": "La persona ya ha sido registrada en la sede"
             });
         }
 
@@ -193,14 +193,14 @@ const getByMyCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
     CampusesDoctors.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('_id').then(campusesDoctors => {
-        if (!campusesDoctors) {
+        campusesDoctors = campusesDoctors.filter(campusDoctor => campusDoctor.campus.user);
+        
+        if (campusesDoctors.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No campusesDoctors avaliable..."
+                message: "No existen datos por el momento"
             });
         }
-
-        campusesDoctors = campusesDoctors.filter(campusDoctor => campusDoctor.campus.user);
 
         return res.status(200).json({
             "status": "success",
@@ -237,21 +237,15 @@ const searchDoctorsByMyCampus = async (req, res) => {
         });
     }
 
-    CampusesDoctors.find({ campus: campusId }).populate({
-        path: 'doctor',
-        populate: {
-          path: 'personData',
-          match: { names: { $regex: req.query.doctorName, $options: 'i' } } 
-        }
-    }).sort('_id').then(campusesDoctors => {
-        if (!campusesDoctors) {
+    CampusesDoctors.find({ campus: campusId }).populate({ path: 'doctor', populate: { path: 'personData', match: { names: { $regex: req.query.doctorName, $options: 'i' } } } }).sort('_id').then(campusesDoctors => {
+        campusesDoctors = campusesDoctors.filter(campusDoctor => campusDoctor.doctor.personData);
+        
+        if (campusesDoctors.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No campusesDoctors avaliable..."
+                message: "Doctor/doctores no encontrados"
             });
         }
-
-        campusesDoctors = campusesDoctors.filter(campusDoctor => campusDoctor.doctor.personData);
 
         return res.status(200).json({
             "status": "success",

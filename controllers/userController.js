@@ -72,7 +72,7 @@ const login = (req, res) => {
     if (!body.email || !body.password) {
         return res.status(400).json({
             "status": "error",
-            "message": "Missing data"
+            "message": "Faltan datos"
         });
     }
 
@@ -80,7 +80,7 @@ const login = (req, res) => {
         if (!user) {
             return res.status(400).json({
                 "status": "error",
-                "message": "User doesn't exist"
+                "message": "Email no existe"
             });
         }
 
@@ -89,7 +89,7 @@ const login = (req, res) => {
         if (!pwd) {
             return res.status(400).json({
                 "status": "error",
-                "message": "Passwords doesn't match"
+                "message": "Contraseña incorrecta"
             });
         }
 

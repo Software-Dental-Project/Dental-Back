@@ -70,7 +70,7 @@ const createWithoutUser = async (req, res) => {
     if (!body.tuitionNumber) {
         return res.status(400).json({
             "status": "error",
-            "message": "Missing data"
+            "message": "Faltan datos de doctor"
         });
     }
 
@@ -84,9 +84,9 @@ const createWithoutUser = async (req, res) => {
         const doctors = await Doctor.find({ $or: [{ tuitionNumber: bodyDoctor.tuitionNumber.toLowerCase() }] });
 
         if (doctors && doctors.length >= 1) {
-            return res.status(200).json({
+            return res.status(400).json({
                 "status": "success",
-                "message": "The doctor already exists"
+                "message": "El doctor con esa colegiatura ya existe"
             });
         }
 
@@ -102,11 +102,7 @@ const createWithoutUser = async (req, res) => {
                 });
             }
 
-            return res.status(200).json({
-                "status": "success",
-                "message": "Doctor registered",
-                "doctor": doctorStored
-            });
+            return res.status(200).json(doctorStored);
         } catch (error) {
             return res.status(500).json({
                 "status": "error",

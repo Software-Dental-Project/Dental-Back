@@ -8,7 +8,7 @@ const create = async (req, res) => {
     if (!body.problemFound || !body.priority || !body.initialCost || !body.discount || !body.finalCost) {
         return res.status(400).json({
             "status": "error",
-            "message": "Missing data"
+            "message": "Faltan datos"
         });
     }
 
@@ -111,10 +111,10 @@ const getByConsultationId = (req, res) => {
     let consultationId = req.query.idConsultationResult;
 
     ConsultationResult.find({ consultation: consultationId }).populate(["treatment", { path: "consultation", populate: { path: "patient"} }]).sort('priority').then(consultationResults => {
-        if (!consultationResults) {
+        if (consultationResults.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No consultationResults avaliable..."
+                message: "No se encontraron problemas"
             });
         }
 

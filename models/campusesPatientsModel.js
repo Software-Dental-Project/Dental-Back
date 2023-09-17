@@ -10,7 +10,7 @@ const CampusesPatientsSchema = Schema({
         ref: "Patient"
     },
     startDate: {
-        type: String,
+        type: Date,
         required: true
     },
     state: {
