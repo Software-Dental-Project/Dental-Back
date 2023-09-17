@@ -17,11 +17,11 @@ const TreatmentAppointmentSchema = Schema({
         type: String,
         required: true
     },
-    hourScheduled: {
+    hour: {
         type: String,
         required: true
     },
-    hourAssisted: {
+    cost: {
         type: String,
         required: true
     },

@@ -177,11 +177,55 @@ const getByClinicId = (req, res) => {
     });
 }
 
+const getAllCampusByClinicIdFromCampus = async (req, res) => {
+    let userId = req.user.id;
+    let clinicId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicId = campus.clinic;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    Campus.find({ clinic: clinicId }).sort('_id').then(campuses => {
+        if (!campuses) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No campuses avaliable..."
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            campuses
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 module.exports = {
     create,
     myCampus,
     list,
     campusById,
     editCampus,
-    getByClinicId
+    getByClinicId,
+    getAllCampusByClinicIdFromCampus
 }

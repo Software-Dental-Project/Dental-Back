@@ -1,4 +1,5 @@
 const TreatmentAppointment = require("../models/treatmentAppointmentsModel");
+const Campus = require("../models/campusModel");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -7,8 +8,10 @@ const middlewareService = require("../services/group");
 const create = async (req, res) => {
     let body = req.body;
     let treatmentDetailId = req.query.idTreatmentDetail;
+    let doctorId = req.query.idDoctor;
+    let campusId = req.query.idCampus;
 
-    if (!body.description) {
+    if (!body.description || !body.hour || !body.cost || !body.date) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -18,7 +21,12 @@ const create = async (req, res) => {
     let bodyTreatmentAppointment = {
         treatmentDetail: treatmentDetailId,
         description: body.description,
-        date: body.date
+        date: body.date,
+        status: "Scheduled",
+        hour: body.hour,
+        cost: body.cost,
+        doctor: doctorId,
+        campus: campusId
     }
 
     let treatment_appointment_to_save = new TreatmentAppointment(bodyTreatmentAppointment);
@@ -92,11 +100,11 @@ const treatmentAppointmentById = (req, res) => {
 const getByTreatmentDetailId = (req, res) => {
     let treatmentDetailId = req.query.idTreatmentDetail;
 
-    TreatmentAppointment.find({ treatmentDetail: treatmentDetailId }).sort('_id').then(treatmentAppointments => {
+    TreatmentAppointment.find({ treatmentDetail: treatmentDetailId }).populate([{ path: "doctor", populate: { path: "personData" } }, "campus" ] ).sort('_id').then(treatmentAppointments => {
         if (!treatmentAppointments) {
             return res.status(404).json({
                 status: "Error",
-                message: "No treatmentAppointments avaliable..."
+                message: "Citas de tratamiento no encontradas"
             });
         }
 
@@ -112,18 +120,39 @@ const getByTreatmentDetailId = (req, res) => {
     });
 }
 
-const getByPatientId = (req, res) => {
+const getByPatientId = async (req, res) => {
     let patientId = new ObjectId(req.query.idPatient);
+    let userId = req.user.id;
+    let campusId;
 
-    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, "campus", { path: "treatmentDetail", populate: { path: "consultationResult", populate: [{ path: "consultation", populate: { path: "patient", match: { _id: patientId } } }, "treatment"] } } ]).sort('_id').then(treatmentAppointments => {
-        if (!treatmentAppointments) {
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        campusId = campus._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    TreatmentAppointment.find({ campus: campusId }).populate([{ path: "doctor", populate: { path: "personData" } }, "campus", { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", match: { _id: patientId } }] } ]).sort('_id').then(treatmentAppointments => {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.treatmentDetail.patient);
+        
+        if (treatmentAppointments.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No treatmentAppointments avaliable..."
+                message: "Citas de tratamiento no encontradas"
             });
         }
-
-        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.treatmentDetail.consultationResult.consultation.patient);
 
         const groupedAppointments = middlewareService.groupByTreatmentDetail(treatmentAppointments);
 
@@ -139,14 +168,37 @@ const getByPatientId = (req, res) => {
     });
 }
 
-const getByDoctorId = (req, res) => {
+const getByDoctorId = async (req, res) => {
     let doctorId = new ObjectId(req.query.idDoctor);
+    let userId = req.user.id;
+    let campusId;
 
-    TreatmentAppointment.find().populate([{ path: "doctor", match: { _id: doctorId }, populate: { path: "personData"} }, "campus", { path: "treatmentDetail", populate: { path: "consultationResult", populate: [{ path: "consultation", populate: { path: "patient", populate: "personData" } }, "treatment"] } } ]).sort('_id').then(treatmentAppointments => {
-        if (!treatmentAppointments) {
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        campusId = campus._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    TreatmentAppointment.find({ campus: campusId }).populate([{ path: "doctor", match: { _id: doctorId }, populate: { path: "personData"} }, "campus", { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.doctor);
+        
+        if (treatmentAppointments.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No treatmentAppointments avaliable..."
+                message: "Citas de tratamiento no encontradas"
             });
         }
 
@@ -169,7 +221,7 @@ const getByDoctorId = (req, res) => {
 const myTreatmentAppointmentsByCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
-    TreatmentAppointment.find({ status: "Scheduled" }).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "consultationResult", populate: { path: "consultation", populate: { path: "patient", populate: { path: "personData" } } } } } ]).sort('hourScheduled').then(treatmentAppointments => {
+    TreatmentAppointment.find({ status: "Scheduled" }).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hourScheduled').then(treatmentAppointments => {
         if (!treatmentAppointments) {
             return res.status(404).json({
                 status: "Error",

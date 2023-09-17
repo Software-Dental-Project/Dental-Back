@@ -28,6 +28,10 @@ const TreatmentDetailSchema = Schema({
         type: Schema.ObjectId,
         ref: "Patient"
     },
+    status: {
+        type: String,
+        default: "Incomplete"
+    }
 });
 
 module.exports = model("TreatmentDetail", TreatmentDetailSchema, "treatmentDetails");

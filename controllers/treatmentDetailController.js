@@ -72,7 +72,7 @@ const list = (req, res) => {
 }
 
 const treatmentDetailById = (req, res) => {
-    TreatmentDetail.findById(req.query.idTreatmentDetail).then(treatmentDetail => {
+    TreatmentDetail.findById(req.query.idTreatmentDetail).populate([ { path: "patient", populate: { path: "personData" } } , { path: "consultationResult", populate: { path: "treatment" } } ] ).then(treatmentDetail => {
         if (!treatmentDetail) {
             return res.status(404).json({
                 "status": "error",
@@ -119,14 +119,14 @@ const myTreatmentDetailsByCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
     TreatmentDetail.find().populate([{ path: "consultationResult", populate: { path: "consultation", populate: [{ path: "campus", populate: { path: "user", match: { _id: userId } } }, {path: "doctor", populate: { path: "personData"}}] } }, {path: "patient", populate: { path: "personData"}} ]).then(treatmentDetails => {
-        if (!treatmentDetails) {
+        treatmentDetails = treatmentDetails.filter(treatmentDetail => treatmentDetail.consultationResult.consultation.campus.user);
+        
+        if (treatmentDetails.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No treatmentDetails avaliable..."
+                message: "Tratamientos no encontrados"
             });
         }
-
-        treatmentDetails = treatmentDetails.filter(treatmentDetail => treatmentDetail.consultationResult.consultation.campus.user);
 
         return res.status(200).json({
             "status": "success",

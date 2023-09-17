@@ -10,5 +10,6 @@ router.get("/list", CampusController.list);
 router.get("/", CampusController.campusById);
 router.put("/", CampusController.editCampus);
 router.get("/clinic", CampusController.getByClinicId);
+router.get("/myCampus", check.auth, CampusController.getAllCampusByClinicIdFromCampus);
 
 module.exports = router;
