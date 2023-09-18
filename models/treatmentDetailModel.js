@@ -22,7 +22,8 @@ const TreatmentDetailSchema = Schema({
         default: Date.now
     },
     endDate: {
-        type: Date
+        type: Date,
+        default: Date.now
     },
     patient: {
         type: Schema.ObjectId,

@@ -21,7 +21,11 @@ const PersonDataSchema = Schema({
         type: String,
         required: true
     },
-    lastNames: {
+    fatherLastName: {
+        type: String,
+        required: true
+    },
+    motherLastName: {
         type: String,
         required: true
     },

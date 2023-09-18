@@ -101,7 +101,7 @@ const getByTreatmentDetailId = (req, res) => {
     let treatmentDetailId = req.query.idTreatmentDetail;
 
     TreatmentAppointment.find({ treatmentDetail: treatmentDetailId }).populate([{ path: "doctor", populate: { path: "personData" } }, "campus" ] ).sort('_id').then(treatmentAppointments => {
-        if (!treatmentAppointments) {
+        if (treatmentAppointments.length == 0) {
             return res.status(404).json({
                 status: "Error",
                 message: "Citas de tratamiento no encontradas"

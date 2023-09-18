@@ -4,7 +4,7 @@ const create = async (req, res) => {
     let body = req.body;
 
     if (!body.age || !body.dni || !body.genre || !body.bornDate || !body.names
-        || !body.lastNames || !body.phoneNumber || !body.address || !body.email) {
+        || !body.fatherLastName || !body.motherLastName || !body.phoneNumber || !body.address || !body.email) {
         return res.status(400).json({
             "status": "error",
             "message": "Faltan datos"
@@ -17,7 +17,8 @@ const create = async (req, res) => {
         genre: body.genre,
         bornDate: body.bornDate,
         names: body.names,
-        lastNames: body.lastNames,
+        fatherLastName: body.fatherLastName,
+        motherLastName: body.motherLastName,
         phoneNumber: body.phoneNumber,
         address: body.address,
         email: body.email

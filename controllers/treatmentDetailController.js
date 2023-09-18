@@ -7,7 +7,7 @@ const create = async (req, res) => {
     let consultationResultId = req.query.idConsultationResult;
     let patientId = req.query.idPatient;
 
-    if (!body.description || !body.initialCost || !body.finalCost || !body.endDate) {
+    if (!body.description || !body.initialCost) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -18,9 +18,7 @@ const create = async (req, res) => {
         consultationResult: consultationResultId,
         description: body.description,
         initialCost: body.initialCost,
-        finalCost: body.finalCost,
-        startDate: body.startDate,
-        endDate: body.endDate,
+        finalCost: body.initialCost,
         patient: patientId
     }
 
