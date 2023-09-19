@@ -14,12 +14,10 @@ const ConsultationSchema = Schema({
         ref: "Campus"
     },
     consultationReason: {
-        type: String,
-        required: true
+        type: String
     },
     cost: {
-        type: String,
-        required: true
+        type: String
     },
     date: {
         type: Date,

@@ -3,8 +3,7 @@ const PersonData = require("../models/personDataModel");
 const create = async (req, res) => {
     let body = req.body;
 
-    if (!body.age || !body.dni || !body.genre || !body.bornDate || !body.names
-        || !body.fatherLastName || !body.motherLastName || !body.phoneNumber || !body.address || !body.email) {
+    if (!body.dni || !body.names || !body.fatherLastName || !body.motherLastName ) {
         return res.status(400).json({
             "status": "error",
             "message": "Faltan datos"

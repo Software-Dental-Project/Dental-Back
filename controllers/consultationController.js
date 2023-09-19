@@ -29,7 +29,7 @@ const create = async (req, res) => {
         });
     }
 
-    if (!body.consultationReason || !body.cost || !body.date || !body.hour) {
+    if (!body.date || !body.hour) {
         return res.status(400).json({
             "status": "error",
             "message": "Faltan datos"
@@ -46,6 +46,7 @@ const create = async (req, res) => {
         status: "Scheduled",
         hour: body.hour
     }
+    console.log(bodyConsultation);
 
     let consultation_to_save = new Consultation(bodyConsultation);
 
