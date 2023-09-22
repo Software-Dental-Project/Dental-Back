@@ -159,6 +159,29 @@ const searchPatient = (req, res) => {
     });
 }
 
+const searchPatientByPersonDataDni = (req, res) => {
+    Patient.find().populate( { path: "personData", match: { dni: req.query.dni } } ).then(patients => {
+        if (!patients) {
+            return res.status(404).json({
+                "status": "error",
+                "message": "Patient doesn't exist"
+            });
+        }
+
+        patients = patients.filter(patient => patient.personData);
+
+        return res.status(200).json({
+            "status": "success",
+            "patient": patients
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            "status": "error",
+            "message": "Error while finding patient"
+        });
+    });
+}
+
 const editPatient = (req, res) => {
     let id = req.query.idPatient;
 
@@ -188,5 +211,6 @@ module.exports = {
     list,
     patientById,
     searchPatient,
+    searchPatientByPersonDataDni,
     editPatient
 }

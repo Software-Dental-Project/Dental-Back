@@ -10,6 +10,7 @@ router.get("/myPatient", check.auth, PatientController.myPatient);
 router.get("/list", PatientController.list);
 router.get("/", PatientController.patientById);
 router.get("/search", PatientController.searchPatient);
+router.get("/dni", PatientController.searchPatientByPersonDataDni);
 router.put("/", PatientController.editPatient);
 
 module.exports = router;

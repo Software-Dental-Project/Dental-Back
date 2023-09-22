@@ -221,7 +221,7 @@ const getByDoctorId = async (req, res) => {
 const myTreatmentAppointmentsByCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
-    TreatmentAppointment.find({ status: "Scheduled" }).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hourScheduled').then(treatmentAppointments => {
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hourScheduled').then(treatmentAppointments => {
         if (!treatmentAppointments) {
             return res.status(404).json({
                 status: "Error",
@@ -230,6 +230,37 @@ const myTreatmentAppointmentsByCampus = async (req, res) => {
         }
 
         treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.user);
+
+        return res.status(200).json({
+            "status": "success",
+            treatmentAppointments
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const myTreatmentAppointmentsByCampusForAgenda = (req, res) => {
+    let userId = new ObjectId(req.user.id);
+    let today = new Date().setHours(0,0,0,0);
+
+    TreatmentAppointment.find({ status: "Scheduled"}).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hour').then(treatmentAppointments => {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => {
+            const treatmentAppointmentDate = new Date(treatmentAppointment.date).setHours(0,0,0,0);
+            const treatmentAppointmentToday = treatmentAppointmentDate == today;
+            
+            return treatmentAppointment.campus.user && treatmentAppointmentToday;
+        });
+        
+        if (treatmentAppointments.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Citas no encontradas"
+            });
+        }
 
         return res.status(200).json({
             "status": "success",
@@ -273,5 +304,6 @@ module.exports = {
     getByPatientId,
     getByDoctorId,
     myTreatmentAppointmentsByCampus,
+    myTreatmentAppointmentsByCampusForAgenda,
     editTreatmentAppointment
 }

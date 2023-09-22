@@ -12,6 +12,7 @@ router.get("/doctor", check.auth, ConsultationController.consultationByIdDoctor)
 router.get("/myConsultationsByPatient", check.auth, ConsultationController.myConsultationByPatient);
 router.get("/myConsultationsByDoctor", check.auth, ConsultationController.myConsultationByDoctor);
 router.get("/myConsultationsByCampus", check.auth, ConsultationController.myConsultationByCampus);
+router.get("/myConsultationsByCampusAgenda", check.auth, ConsultationController.myConsultationByCampusForAgenda);
 router.put("/", ConsultationController.editConsultation);
 
 module.exports = router;

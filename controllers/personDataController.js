@@ -125,9 +125,31 @@ const editPerson = (req, res) => {
     });
 }
 
+const searchPersonDataByDni = async (req, res) => {
+    PersonData.findOne({ dni: req.query.dni }).sort('_id').then(personData => {
+        if (!personData) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No existe data de la persona"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            personData
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 module.exports = {
     create,
     list,
     personById,
-    editPerson
+    editPerson,
+    searchPersonDataByDni
 }

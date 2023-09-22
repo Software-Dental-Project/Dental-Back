@@ -11,6 +11,7 @@ router.get("/treatmentDetail", TreatmentAppointmentController.getByTreatmentDeta
 router.get("/patient", check.auth, TreatmentAppointmentController.getByPatientId);
 router.get("/doctor", check.auth, TreatmentAppointmentController.getByDoctorId);
 router.get("/myTreatmentAppointmentsByCampus", check.auth, TreatmentAppointmentController.myTreatmentAppointmentsByCampus);
+router.get("/myTreatmentAppointmentsByCampusAgenda", check.auth, TreatmentAppointmentController.myTreatmentAppointmentsByCampusForAgenda);
 router.put("/", TreatmentAppointmentController.editTreatmentAppointment);
 
 module.exports = router;

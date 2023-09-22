@@ -282,25 +282,17 @@ const searchPatientsByMyCampusAndDni = async (req, res) => {
         });
     }
 
-    CampusesPatients.find({ campus: campusId }).populate({
-        path: 'patient',
-        populate: {
-          path: 'personData',
-          match: { dni: req.query.patientDni } 
-        }
-    }).sort('_id').then(campusesPatients => {
-        if (!campusesPatients) {
+    CampusesPatients.findOne({ campus: campusId }).populate({ path: 'patient', populate: { path: 'personData', match: { dni: req.query.dni } } }).sort('_id').then(campusesPatient => {
+        if (!campusesPatient || campusesPatient.patient.personData == null) {
             return res.status(404).json({
                 status: "Error",
-                message: "No campusesPatients avaliable..."
+                message: "No existe paciente en sede"
             });
         }
 
-        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.patient.personData);
-
         return res.status(200).json({
             "status": "success",
-            campusesPatients
+            campusesPatient
         });
     }).catch(error => {
         return res.status(500).json({

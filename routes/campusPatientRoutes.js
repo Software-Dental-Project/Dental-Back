@@ -10,7 +10,7 @@ router.get("/list", CampusPatientController.list);
 router.get("/campus", CampusPatientController.getByCampusId);
 router.get("/myCampus", check.auth, CampusPatientController.getByMyCampus);
 router.get("/search", check.auth, CampusPatientController.searchPatientsByMyCampus);
-router.get("/searchDni", check.auth, CampusPatientController.searchPatientsByMyCampusAndDni);
+router.get("/dni", check.auth, CampusPatientController.searchPatientsByMyCampusAndDni);
 router.get("/patient", CampusPatientController.getByPatientId);
 router.delete("/", check.auth, CampusPatientController.deleteByPatientId);
 

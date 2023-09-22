@@ -30,6 +30,7 @@ const ConsultationResultRoutes = require("./routes/consultationResultRoutes");
 const TreatmentRoutes = require("./routes/treatmentRoutes");
 const TreatmentDetailRoutes = require("./routes/treatmentDetailRoutes");
 const TreatmentAppointmentRoutes = require("./routes/treatmentAppointmentRoutes");
+const AgendaRoutes = require("./routes/agendaRoutes");
 app.use("/api/users", UserRoutes);
 app.use("/api/clinics", ClinicRoutes);
 app.use("/api/personData", PersonDataRoutes);
@@ -44,6 +45,7 @@ app.use("/api/consultationResults", ConsultationResultRoutes);
 app.use("/api/treatments", TreatmentRoutes);
 app.use("/api/treatmentDetails", TreatmentDetailRoutes);
 app.use("/api/treatmentAppointments", TreatmentAppointmentRoutes);
+app.use("/api/agenda", AgendaRoutes);
 
 app.get("/test-route", (req, res) => {
     return res.status(200).json({

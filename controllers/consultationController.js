@@ -283,6 +283,37 @@ const myConsultationByCampus = (req, res) => {
     });
 }
 
+const myConsultationByCampusForAgenda = (req, res) => {
+    let userId = new ObjectId(req.user.id);
+    let today = new Date().setHours(0,0,0,0);
+
+    Consultation.find({ status: "Scheduled"}).populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('hour').then(consultations => {
+        consultations = consultations.filter(consultation => {
+            const consultationDate = new Date(consultation.date).setHours(0,0,0,0);
+            const consultationToday = consultationDate == today;
+            
+            return consultation.campus.user && consultationToday;
+        });
+        
+        if (consultations.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Consultas no encontradas"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            consultations
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const editConsultation = (req, res) => {
     let id = req.query.idConsultation;
 
@@ -314,5 +345,6 @@ module.exports = {
     myConsultationByPatient,
     myConsultationByDoctor,
     myConsultationByCampus,
+    myConsultationByCampusForAgenda,
     editConsultation
 }
