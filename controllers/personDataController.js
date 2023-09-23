@@ -23,40 +23,24 @@ const create = async (req, res) => {
         email: body.email
     }
 
+    let person_data_to_save = new PersonData(bodyPersonData);
+
     try {
-        const people = await PersonData.find({ $or: [{ dni: bodyPersonData.dni.toLowerCase() }] });
+        const personStored = await person_data_to_save.save();
 
-        if (people && people.length >= 1) {
-            return res.status(400).json({
-                "status": "success",
-                "message": "La persona ya ha sido registrada"
-            });
-        }
-
-        let person_data_to_save = new PersonData(bodyPersonData);
-
-        try {
-            const personStored = await person_data_to_save.save();
-
-            if (!personStored) {
-                return res.status(500).json({
-                    "status": "error",
-                    "message": "No person saved"
-                });
-            }
-
-            return res.status(200).json(personStored);
-        } catch (error) {
+        if (!personStored) {
             return res.status(500).json({
                 "status": "error",
-                "message": "Error while saving person",
-                error
+                "message": "No person saved"
             });
         }
-    } catch {
+
+        return res.status(200).json(personStored);
+    } catch (error) {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while finding person data duplicate"
+            "message": "Error while saving person",
+            error
         });
     }
 }
