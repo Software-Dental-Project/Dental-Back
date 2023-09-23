@@ -159,16 +159,16 @@ const searchPatient = (req, res) => {
     });
 }
 
-const searchPatientByPersonDataDni = (req, res) => {
-    Patient.find().populate( { path: "personData", match: { dni: req.query.dni } } ).then(patients => {
-        if (!patients) {
+const searchPatientByPersonDataId = (req, res) => {
+    Patient.find({ personData: req.query.personDataId }).populate().then(patients => {
+        patients = patients.filter(patient => patient.personData);
+
+        if (!patients || patients.length == 0) {
             return res.status(404).json({
                 "status": "error",
-                "message": "Patient doesn't exist"
+                "message": "Paciente no existe"
             });
         }
-
-        patients = patients.filter(patient => patient.personData);
 
         return res.status(200).json({
             "status": "success",
@@ -211,6 +211,6 @@ module.exports = {
     list,
     patientById,
     searchPatient,
-    searchPatientByPersonDataDni,
+    searchPatientByPersonDataId,
     editPatient
 }

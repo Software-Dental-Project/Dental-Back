@@ -14,7 +14,8 @@ const ConsultationSchema = Schema({
         ref: "Campus"
     },
     consultationReason: {
-        type: String
+        type: String,
+        default: "No posee motivo"
     },
     cost: {
         type: String

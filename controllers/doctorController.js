@@ -183,10 +183,34 @@ const doctorById = (req, res) => {
     });
 }
 
+const searchDoctorByPersonDataId = (req, res) => {
+    Doctor.find({ personData: req.query.personDataId }).populate().then(doctors => {
+        doctors = doctors.filter(doctor => doctor.personData);
+
+        if (!doctors || doctors.length == 0) {
+            return res.status(404).json({
+                "status": "error",
+                "message": "Doctor no existe"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            "doctor": doctors
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            "status": "error",
+            "message": "Error while finding doctor"
+        });
+    });
+}
+
 module.exports = {
     create,
     createWithoutUser,
     myDoctor,
     list,
-    doctorById
+    doctorById,
+    searchDoctorByPersonDataId
 }

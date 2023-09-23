@@ -9,5 +9,6 @@ router.post("/personData", DoctorController.createWithoutUser);
 router.get("/myDoctor", check.auth, DoctorController.myDoctor);
 router.get("/list", DoctorController.list);
 router.get("/", DoctorController.doctorById);
+router.get("/personData", DoctorController.searchDoctorByPersonDataId);
 
 module.exports = router;

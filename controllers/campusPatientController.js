@@ -282,7 +282,7 @@ const searchPatientsByMyCampusAndDni = async (req, res) => {
         });
     }
 
-    CampusesPatients.find().populate({ path: 'patient', populate: { path: 'personData', match: { dni: req.query.dni } } }).sort('_id').then(campusesPatient => {
+    CampusesPatients.find({ campus: campusId }).populate([{ path: 'patient', populate: { path: 'personData', match: { dni: req.query.dni } } }, "campus"]).sort('_id').then(campusesPatient => {
         campusesPatient = campusesPatient.filter(campusPatient => campusPatient.patient.personData)
 
         if (!campusesPatient || campusesPatient.length == 0) {

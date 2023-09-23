@@ -46,7 +46,6 @@ const create = async (req, res) => {
         status: "Scheduled",
         hour: body.hour
     }
-    console.log(bodyConsultation);
 
     let consultation_to_save = new Consultation(bodyConsultation);
 
