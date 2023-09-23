@@ -95,6 +95,51 @@ const list = (req, res) => {
     });
 }
 
+const searchClinicPersonDataByDni = async (req, res) => {
+    let userId = req.user.id;
+    let clinicId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicId = campus.clinic;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    ClinicPersonData.find({ clinic: clinicId }).populate({ path: "personData", match: { dni: req.query.dni } }).sort('_id').then(clinicPersonData => {
+        clinicPersonData = clinicPersonData.filter(clinicPersonData => clinicPersonData.personData);
+        
+        if (clinicPersonData.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No existe data de la persona en la clinica"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            clinicPersonData
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const getByCampusId = (req, res) => {
     let campusId = req.query.idCampus;
 
@@ -257,6 +302,7 @@ const deleteByDoctorId = async (req, res) => {
 module.exports = {
     createFromCampus,
     list,
+    searchClinicPersonDataByDni,
     getByCampusId,
     getByMyCampus,
     searchDoctorsByMyCampus,
