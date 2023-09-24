@@ -80,40 +80,24 @@ const createWithoutUser = async (req, res) => {
         speciality: specialityId
     }
 
+    let doctor_to_save = new Doctor(bodyDoctor);
+
     try {
-        const doctors = await Doctor.find({ $or: [{ tuitionNumber: bodyDoctor.tuitionNumber.toLowerCase() }] });
+        const doctorStored = await doctor_to_save.save();
 
-        if (doctors && doctors.length >= 1) {
-            return res.status(400).json({
-                "status": "success",
-                "message": "El doctor con esa colegiatura ya existe"
-            });
-        }
-
-        let doctor_to_save = new Doctor(bodyDoctor);
-
-        try {
-            const doctorStored = await doctor_to_save.save();
-
-            if (!doctorStored) {
-                return res.status(500).json({
-                    "status": "error",
-                    "message": "No doctor saved"
-                });
-            }
-
-            return res.status(200).json(doctorStored);
-        } catch (error) {
+        if (!doctorStored) {
             return res.status(500).json({
                 "status": "error",
-                "message": "Error while saving doctor",
-                error
+                "message": "No doctor saved"
             });
         }
-    } catch {
+
+        return res.status(200).json(doctorStored);
+    } catch (error) {
         return res.status(500).json({
             "status": "error",
-            "message": "Error while finding doctor duplicate"
+            "message": "Error while saving doctor",
+            error
         });
     }
 }
