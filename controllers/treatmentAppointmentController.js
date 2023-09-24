@@ -77,7 +77,7 @@ const list = (req, res) => {
 }
 
 const treatmentAppointmentById = (req, res) => {
-    TreatmentAppointment.findById(req.query.idTreatmentAppointments).then(treatmentAppointment => {
+    TreatmentAppointment.findById(req.query.idTreatmentAppointments).populate("doctor campus").then(treatmentAppointment => {
         if (!treatmentAppointment) {
             return res.status(404).json({
                 "status": "error",
