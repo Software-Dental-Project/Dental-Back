@@ -92,7 +92,7 @@ const getHistoryBySede = async (req, res) => {
     if (agenda.length == 0) {
         return res.status(404).json({
             status: "Error",
-            message: "Citas y consultas no encontradas en agenda para el dia de hoy"
+            message: "Citas y consultas no encontradas para sede"
         });
     }
 

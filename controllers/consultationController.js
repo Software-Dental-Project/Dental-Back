@@ -207,6 +207,59 @@ const consultationByIdDoctor = async (req, res) => {
     });
 }
 
+const consultationPatientsByIdDoctor = async (req, res) => {
+    let doctorId = req.query.idDoctor;
+    let userId = req.user.id;
+    let patients = [];
+    let campusId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        campusId = campus._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    Consultation.find({ campus: campusId }).populate([{ path: "patient", populate: {path: "personData"}}, { path: "doctor", match: { _id: doctorId } }]).sort('startDate').then(consultations => {
+        consultations.forEach(consultation => {
+            if (consultation.doctor) {
+                this.patients.push(consultation.patient);
+            }
+        });
+        
+        if (patients.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No existen consultas"
+            });
+        }
+
+        const patients = Array.from(new Set(patients));
+
+        return res.status(200).json({
+            "status": "success",
+            patients
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const myConsultationByPatient = (req, res) => {
     let userId = new ObjectId(req.user.id);
 
@@ -341,6 +394,7 @@ module.exports = {
     consultationById,
     consultationByIdPatient,
     consultationByIdDoctor,
+    consultationPatientsByIdDoctor,
     myConsultationByPatient,
     myConsultationByDoctor,
     myConsultationByCampus,

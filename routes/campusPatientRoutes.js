@@ -11,6 +11,7 @@ router.get("/campus", CampusPatientController.getByCampusId);
 router.get("/myCampus", check.auth, CampusPatientController.getByMyCampus);
 router.get("/search", check.auth, CampusPatientController.searchPatientsByMyCampus);
 router.get("/dni", check.auth, CampusPatientController.searchPatientsByMyCampusAndDni);
+router.get("/patientId", check.auth, CampusPatientController.searchPatientsByMyCampusAndPatientId);
 router.get("/patient", CampusPatientController.getByPatientId);
 router.delete("/", check.auth, CampusPatientController.deleteByPatientId);
 

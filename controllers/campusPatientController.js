@@ -304,6 +304,52 @@ const searchPatientsByMyCampusAndDni = async (req, res) => {
     });
 }
 
+const searchPatientsByMyCampusAndPatientId = async (req, res) => {
+    let userId = req.user.id;
+    let patientId = new ObjectId(req.query.idPatient);
+    let campusId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        campusId = campus._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    CampusesPatients.find({ campus: campusId }).populate([{ path: 'patient', match: { _id: patientId } }, "campus"]).sort('_id').then(campusesPatient => {
+        campusesPatient = campusesPatient.filter(campusPatient => campusPatient.patient)
+
+        if (!campusesPatient || campusesPatient.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No existe paciente en sede"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            campusesPatient
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const getByPatientId = (req, res) => {
     let patientId = req.query.idPatient;
 
@@ -378,6 +424,7 @@ module.exports = {
     getByMyCampus,
     searchPatientsByMyCampus,
     searchPatientsByMyCampusAndDni,
+    searchPatientsByMyCampusAndPatientId,
     getByPatientId,
     deleteByPatientId
 }
