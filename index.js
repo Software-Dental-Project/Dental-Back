@@ -59,7 +59,7 @@ app.get("/test-route", (req, res) => {
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-      origin: 'http://localhost:4200',
+      origin: 'https://dental-software-1a384.web.app',
       methods: ['GET', 'POST'],
       credentials: true,
     },
