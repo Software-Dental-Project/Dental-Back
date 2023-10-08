@@ -8,14 +8,14 @@ module.exports = (io) => {
 
         socket.on('doctorDeletedCampusInterface', (arg) => {
             io.emit('deletedDoctorInCampus', arg);
-            io.emit('deletedDoctorInCampusForDoctorsView');
-            io.emit('deletedDoctorInCampusForDoctorProfileView');
+            io.emit('deletedDoctorInCampusForDoctorsView', arg.validator);
+            io.emit('deletedDoctorInCampusForDoctorProfileView', arg.validator);
         });
 
         socket.on('patientDeletedCampusInterface', (arg) => {
             io.emit('deletedPatientInCampus', arg);
-            io.emit('deletedPatientInCampusForPatientsView');
-            io.emit('deletedPatientInCampusForPatientProfileView');
+            io.emit('deletedPatientInCampusForPatientsView', arg.validator);
+            io.emit('deletedPatientInCampusForPatientProfileView', arg.validator);
         });
     });
 }
