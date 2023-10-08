@@ -222,14 +222,14 @@ const myTreatmentAppointmentsByCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
     TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hourScheduled').then(treatmentAppointments => {
-        if (!treatmentAppointments) {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.user);
+        
+        if (treatmentAppointments.length == 0) {
             return res.status(404).json({
                 status: "Error",
-                message: "No treatmentAppointments avaliable..."
+                message: "Citas no encontradas"
             });
         }
-
-        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.user);
 
         return res.status(200).json({
             "status": "success",

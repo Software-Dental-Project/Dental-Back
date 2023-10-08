@@ -1,4 +1,6 @@
 const ConsultationResult = require("../models/consultationResultModel");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (req, res) => {
     let body = req.body;
@@ -130,6 +132,31 @@ const getByConsultationId = (req, res) => {
     });
 }
 
+const myConsultationResultsByCampus = (req, res) => {
+    let userId = new ObjectId(req.user.id);
+
+    ConsultationResult.find().populate({ path: "consultation", populate: [{ path: "campus", populate: { path: "user", match: { _id: userId } } }, "patient"] } ).sort('hour').then(consultationResults => {
+        consultationResults = consultationResults.filter(consultationResults => consultationResults.consultation.campus.user);
+        
+        if (consultationResults.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Problemas no encontrados"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            consultationResults
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const editConsultationResult = (req, res) => {
     let id = req.query.idConsultationResult;
 
@@ -157,5 +184,6 @@ module.exports = {
     list,
     consultationResultById,
     getByConsultationId,
+    myConsultationResultsByCampus,
     editConsultationResult
 }

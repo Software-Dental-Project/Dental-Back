@@ -1,15 +1,21 @@
 module.exports = (io) => {
     io.on('connection', (socket) => {
-        console.log('Cliente conectado');
-        io.emit('getUsers');
+        io.emit('connectionSatisfactory');
       
-        /*socket.on('usuarioCreado', () => {
-            console.log('Haz Creado un usuario? Voy a avisar');
-            io.emit('getUsers');
-        });*/
+        //socket.on('patientModifiedCampusInterface', (arg) => {
+            //io.emit('updatePatientsInCampus', arg);
+        //});
 
-        socket.on('disconnect', () => {
-            console.log('Cliente desconectado');
+        socket.on('doctorDeletedCampusInterface', (arg) => {
+            io.emit('deletedDoctorInCampus', arg);
+            io.emit('deletedDoctorInCampusForDoctorsView');
+            io.emit('deletedDoctorInCampusForDoctorProfileView');
+        });
+
+        socket.on('patientDeletedCampusInterface', (arg) => {
+            io.emit('deletedPatientInCampus', arg);
+            io.emit('deletedPatientInCampusForPatientsView');
+            io.emit('deletedPatientInCampusForPatientProfileView');
         });
     });
 }

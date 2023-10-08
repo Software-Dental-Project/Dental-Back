@@ -13,8 +13,10 @@ const groupByTreatmentDetail = treatmentAppointments => {
   
     const result = Array.from(grouped).map(([treatmentDetailId, appointments]) => {
         const treatment = appointments[0].treatmentDetail.consultationResult.treatment.name;
+        const treatmentId = appointments[0].treatmentDetail._id;
         return {
             treatment: treatment,
+            treatmentId: treatmentId,
             appointments: appointments,
         };
     });

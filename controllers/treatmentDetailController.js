@@ -116,7 +116,7 @@ const getByConsultationResultId = (req, res) => {
 const myTreatmentDetailsByCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
-    TreatmentDetail.find().populate([{ path: "consultationResult", populate: { path: "consultation", populate: [{ path: "campus", populate: { path: "user", match: { _id: userId } } }, {path: "doctor", populate: { path: "personData"}}] } }, {path: "patient", populate: { path: "personData"}} ]).then(treatmentDetails => {
+    TreatmentDetail.find().populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: [{ path: "campus", populate: { path: "user", match: { _id: userId } } }, {path: "doctor", populate: { path: "personData"}}] }, "treatment"] }, {path: "patient", populate: { path: "personData"}} ]).then(treatmentDetails => {
         treatmentDetails = treatmentDetails.filter(treatmentDetail => treatmentDetail.consultationResult.consultation.campus.user);
         
         if (treatmentDetails.length == 0) {
