@@ -34,10 +34,12 @@ const create = async (req, res) => {
             });
         }
 
+        const populatedTreatmentDetail = await TreatmentDetail.findById(treatmentDetailStored._id).populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: [{ path: "campus", populate: { path: "user" } }, {path: "doctor", populate: { path: "personData"}}] }, "treatment"] }, {path: "patient", populate: { path: "personData"}} ]);
+
         return res.status(200).json({
             "status": "success",
             "message": "Treatment detail registered",
-            "treatmentDetail": treatmentDetailStored
+            "treatmentDetail": populatedTreatmentDetail
         });
     } catch (error) {
         return res.status(500).json({

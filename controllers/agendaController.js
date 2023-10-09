@@ -74,7 +74,7 @@ const getHistoryBySede = async (req, res) => {
         }
     });
 
-    let treatmentAppointments = await TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort([['date', -1]]);
+    let treatmentAppointments = await TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort([['date', -1], ['hour', 1]]);
     treatmentAppointments.forEach(treatmentAppointment => {
         if (treatmentAppointment.campus.user) {
             agenda.push({

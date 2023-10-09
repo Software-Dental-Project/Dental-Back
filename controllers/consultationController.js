@@ -59,10 +59,12 @@ const create = async (req, res) => {
             });
         }
 
+        const populatedConsultation = await Consultation.findById(consultationStored._id).populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user" } }]);
+
         return res.status(200).json({
             "status": "success",
             "message": "Consultation registered",
-            "consultation": consultationStored
+            "consultation": populatedConsultation
         });
     } catch (error) {
         return res.status(500).json({

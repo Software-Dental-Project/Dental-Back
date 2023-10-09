@@ -47,10 +47,12 @@ const create = async (req, res) => {
                 });
             }
 
+            const populatedConsultationResult = await ConsultationResult.findById(consultationResultStored._id).populate([{ path: "consultation", populate: [{ path: "campus", populate: { path: "user" } }, "patient"] }, 'treatment']);
+
             return res.status(200).json({
                 "status": "success",
                 "message": "Consultation result registered",
-                "consultationResult": consultationResultStored
+                "consultationResult": populatedConsultationResult
             });
         } catch (error) {
             return res.status(500).json({
@@ -135,7 +137,7 @@ const getByConsultationId = (req, res) => {
 const myConsultationResultsByCampus = (req, res) => {
     let userId = new ObjectId(req.user.id);
 
-    ConsultationResult.find().populate({ path: "consultation", populate: [{ path: "campus", populate: { path: "user", match: { _id: userId } } }, "patient"] } ).sort('hour').then(consultationResults => {
+    ConsultationResult.find().populate([{ path: "consultation", populate: [{ path: "campus", populate: { path: "user", match: { _id: userId } } }, "patient"] }, 'treatment']).sort('hour').then(consultationResults => {
         consultationResults = consultationResults.filter(consultationResults => consultationResults.consultation.campus.user);
         
         if (consultationResults.length == 0) {

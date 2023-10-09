@@ -125,10 +125,12 @@ const createFromCampus = async (req, res) => {
                 });
             }
 
+            const populatedCampusDoctor = await CampusesDoctors.findById(campusDoctorStored._id).populate([{path: "doctor", populate: [{ path: "personData"}, { path: 'speciality'}]}, {path: 'campus', populate: { path: 'user'}}]);
+
             return res.status(200).json({
                 "status": "success",
                 "message": "Campus and doctor registered",
-                "campusDoctor": campusDoctorStored
+                "campusDoctor": populatedCampusDoctor
             });
         } catch (error) {
             return res.status(500).json({
