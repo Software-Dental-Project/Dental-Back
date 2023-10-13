@@ -41,10 +41,12 @@ const create = async (req, res) => {
             });
         }
 
+        const populatedTreatmentAppointment = await TreatmentAppointment.findById(treatmentAppointmentStored._id).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: [{ path: "clinic", populate: { path: "user" } }, "user"] }, { path: "treatmentDetail", populate: [{ path: "patient", populate: { path: "personData" } }, { path: "consultationResult", populate: { path: "treatment" } }] } ]);
+
         return res.status(200).json({
             "status": "success",
             "message": "Treatment appointment registered",
-            "treatmentAppointment": treatmentAppointmentStored
+            "treatmentAppointment": populatedTreatmentAppointment
         });
     } catch (error) {
         return res.status(500).json({
@@ -202,9 +204,100 @@ const getByDoctorId = async (req, res) => {
             });
         }
 
-        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.doctor);
-
         const groupedAppointments = middlewareService.groupByTreatmentDetail(treatmentAppointments);
+
+        return res.status(200).json({
+            "status": "success",
+            groupedAppointments
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const getDoctorsAppointmentsGroupedByCampusToken = async (req, res) => {
+    let userId = req.user.id;
+    let clinicUserId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicUserId = campus.clinic.user._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData"} }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic.user);
+        if (treatmentAppointments.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Citas de tratamiento no encontradas"
+            });
+        }
+
+        const groupedAppointments = middlewareService.groupDoctorsAppointmentByTreatmentDetail(treatmentAppointments);
+
+        return res.status(200).json({
+            "status": "success",
+            groupedAppointments
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const getPatientsAppointmentsGroupedByCampusToken = async (req, res) => {
+    let userId = req.user.id;
+    let clinicUserId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicUserId = campus.clinic.user._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData"} }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic.user);
+
+        if (treatmentAppointments.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Citas de tratamiento no encontradas"
+            });
+        }
+
+        const groupedAppointments = middlewareService.groupPatientsAppointmentByTreatmentDetail(treatmentAppointments);
 
         return res.status(200).json({
             "status": "success",
@@ -223,6 +316,51 @@ const myTreatmentAppointmentsByCampus = async (req, res) => {
 
     TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hourScheduled').then(treatmentAppointments => {
         treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.user);
+        
+        if (treatmentAppointments.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Citas no encontradas"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            treatmentAppointments
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
+const myTreatmentAppointmentsClinicByCampus = async (req, res) => {
+    let userId = new ObjectId(req.user.id);
+    let clinicUserId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicUserId = campus.clinic.user._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hourScheduled').then(treatmentAppointments => {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic.user);
         
         if (treatmentAppointments.length == 0) {
             return res.status(404).json({
@@ -303,7 +441,10 @@ module.exports = {
     getByTreatmentDetailId,
     getByPatientId,
     getByDoctorId,
+    getDoctorsAppointmentsGroupedByCampusToken,
+    getPatientsAppointmentsGroupedByCampusToken,
     myTreatmentAppointmentsByCampus,
+    myTreatmentAppointmentsClinicByCampus,
     myTreatmentAppointmentsByCampusForAgenda,
     editTreatmentAppointment
 }

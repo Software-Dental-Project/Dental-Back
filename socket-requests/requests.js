@@ -33,14 +33,23 @@ module.exports = (io) => {
             io.emit('createdConsultationInCampus', arg);
             io.emit('createdConsultationInCampusForPatientProfileView', arg.validator);
             io.emit('createdConsultationInCampusForDoctorProfileView', arg.validator);
-            io.emit('createdConsultationInCampusForAgendaView', arg.validator);
-            io.emit('createdConsultationInCampusForHistoryView', arg.validator);
+            io.emit('createdConsultationInCampusForAgendaView', arg.validatorCampus);
+            io.emit('createdConsultationInCampusForHistoryView', arg.validatorCampus);
         });
 
-        //socket.on('treatmentDetailCreatedCampusInterface', (arg) => {
-          //  io.emit('createdTreatmentDetailInCampus', arg);
-            //io.emit('createdTreatmentDetailInCampusForTreatmentDetailView', arg.validator);
-        //});
+        socket.on('treatmentDetailCreatedCampusInterface', (arg) => {
+            io.emit('createdTreatmentDetailInCampus', arg);
+            io.emit('createdTreatmentDetailInCampusForTreatmentDetailView', arg.validator);
+        });
+
+        socket.on('treatmentAppointmentCreatedCampusInterface', (arg) => {
+            io.emit('createdTreatmentAppointmentInCampus', arg);
+            io.emit('createdTreatmentAppointmentInCampusForTreatmentDetailView', arg.validator);
+            io.emit('createdTreatmentAppointmentInCampusForPatientProfileView', arg.validator);
+            io.emit('createdTreatmentAppointmentInCampusForDoctorProfileView', arg.validator);
+            io.emit('createdTreatmentAppointmentInCampusForAgendaView', arg.validatorCampus);
+            io.emit('createdTreatmentAppointmentInCampusForHistoryView', arg.validatorCampus);
+        });
 
         //socket.on('closedAgendaCampusInterface', () => {
 

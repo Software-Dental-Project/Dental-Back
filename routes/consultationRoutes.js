@@ -13,6 +13,7 @@ router.get("/doctorTable", check.auth, ConsultationController.consultationPatien
 router.get("/myConsultationsByPatient", check.auth, ConsultationController.myConsultationByPatient);
 router.get("/myConsultationsByDoctor", check.auth, ConsultationController.myConsultationByDoctor);
 router.get("/myConsultationsByCampus", check.auth, ConsultationController.myConsultationByCampus);
+router.get("/myConsultationsClinicByCampus", check.auth, ConsultationController.myConsultationClinicByCampus);
 router.get("/myConsultationsByCampusAgenda", check.auth, ConsultationController.myConsultationByCampusForAgenda);
 router.put("/", ConsultationController.editConsultation);
 

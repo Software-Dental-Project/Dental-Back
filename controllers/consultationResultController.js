@@ -1,4 +1,5 @@
 const ConsultationResult = require("../models/consultationResultModel");
+const Campus = require("../models/campusModel");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -47,7 +48,7 @@ const create = async (req, res) => {
                 });
             }
 
-            const populatedConsultationResult = await ConsultationResult.findById(consultationResultStored._id).populate([{ path: "consultation", populate: [{ path: "campus", populate: { path: "user" } }, "patient"] }, 'treatment']);
+            const populatedConsultationResult = await ConsultationResult.findById(consultationResultStored._id).populate([{ path: "consultation", populate: [{ path: "campus", populate: { path: "clinic", populate: { path: "user" } } }, "patient"] }, 'treatment']);
 
             return res.status(200).json({
                 "status": "success",
@@ -159,6 +160,51 @@ const myConsultationResultsByCampus = (req, res) => {
     });
 }
 
+const myConsultationResultsClinicByCampus = async (req, res) => {
+    let userId = new ObjectId(req.user.id);
+    let clinicUserId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicUserId = campus.clinic.user._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    ConsultationResult.find().populate([{ path: "consultation", populate: [{ path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, "patient"] }, 'treatment']).then(consultationResults => {
+        consultationResults = consultationResults.filter(consultationResults => consultationResults.consultation.campus.clinic.user);
+        
+        if (consultationResults.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Problemas no encontrados"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            consultationResults
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const editConsultationResult = (req, res) => {
     let id = req.query.idConsultationResult;
 
@@ -187,5 +233,6 @@ module.exports = {
     consultationResultById,
     getByConsultationId,
     myConsultationResultsByCampus,
+    myConsultationResultsClinicByCampus,
     editConsultationResult
 }

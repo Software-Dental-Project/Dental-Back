@@ -59,7 +59,7 @@ const create = async (req, res) => {
             });
         }
 
-        const populatedConsultation = await Consultation.findById(consultationStored._id).populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "user" } }]);
+        const populatedConsultation = await Consultation.findById(consultationStored._id).populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: [{ path: "clinic", populate: { path: "user" } }, "user"] }]);
 
         return res.status(200).json({
             "status": "success",
@@ -337,6 +337,51 @@ const myConsultationByCampus = (req, res) => {
     });
 }
 
+const myConsultationClinicByCampus = async (req, res) => {
+    let userId = new ObjectId(req.user.id);
+    let clinicUserId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicUserId = campus.clinic.user._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    Consultation.find().populate([{ path: "patient", populate: { path: "personData" } }, { path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }]).then(consultations => {
+        consultations = consultations.filter(consultation => consultation.campus.clinic.user);
+        
+        if (consultations.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Consultas no encontradas"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            consultations
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const myConsultationByCampusForAgenda = (req, res) => {
     let userId = new ObjectId(req.user.id);
     let today = new Date().setHours(0,0,0,0);
@@ -400,6 +445,7 @@ module.exports = {
     myConsultationByPatient,
     myConsultationByDoctor,
     myConsultationByCampus,
+    myConsultationClinicByCampus,
     myConsultationByCampusForAgenda,
     editConsultation
 }

@@ -1,4 +1,5 @@
 const TreatmentDetail = require("../models/treatmentDetailModel");
+const Campus = require("../models/campusModel");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -34,7 +35,7 @@ const create = async (req, res) => {
             });
         }
 
-        const populatedTreatmentDetail = await TreatmentDetail.findById(treatmentDetailStored._id).populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: [{ path: "campus", populate: { path: "user" } }, {path: "doctor", populate: { path: "personData"}}] }, "treatment"] }, {path: "patient", populate: { path: "personData"}} ]);
+        const populatedTreatmentDetail = await TreatmentDetail.findById(treatmentDetailStored._id).populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: [{ path: "campus", populate: [{ path: "clinic", populate: { path: "user" } }, { path: "user"}] }, {path: "doctor", populate: { path: "personData"}}] }, "treatment"] }, {path: "patient", populate: { path: "personData"}} ]);
 
         return res.status(200).json({
             "status": "success",
@@ -140,6 +141,51 @@ const myTreatmentDetailsByCampus = async (req, res) => {
     });
 }
 
+const myTreatmentDetailsClinicByCampus = async (req, res) => {
+    let userId = new ObjectId(req.user.id);
+    let clinicUserId;
+
+    try {
+        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+      
+        if (!campus) {
+          return res.status(404).json({
+            status: "Error",
+            message: "No campus available..."
+          });
+        }
+      
+        clinicUserId = campus.clinic.user._id;
+      
+    } catch (error) {
+        return res.status(500).json({
+          status: "error",
+          error
+        });
+    }
+
+    TreatmentDetail.find().populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: [{ path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, {path: "doctor", populate: { path: "personData"}}] }, "treatment"] }, {path: "patient", populate: { path: "personData"}} ]).then(treatmentDetails => {
+        treatmentDetails = treatmentDetails.filter(treatmentDetail => treatmentDetail.consultationResult.consultation.campus.clinic.user);
+        
+        if (treatmentDetails.length == 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "Tratamientos no encontrados"
+            });
+        }
+
+        return res.status(200).json({
+            "status": "success",
+            treatmentDetails
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            "status": "error",
+            error
+        });
+    });
+}
+
 const editTreatmentDetail = (req, res) => {
     let id = req.query.idTreatmentDetail;
 
@@ -168,5 +214,6 @@ module.exports = {
     treatmentDetailById,
     getByConsultationResultId,
     myTreatmentDetailsByCampus,
+    myTreatmentDetailsClinicByCampus,
     editTreatmentDetail
 }
