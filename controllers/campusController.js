@@ -70,7 +70,7 @@ const create = async (req, res) => {
 const myCampus = (req, res) => {
     let userId = req.user.id;
 
-    Campus.findOne({ user: userId }).populate(["director", "user", "clinic"]).then(campus => {
+    Campus.findOne({ user: userId }).populate([{ path: "director", select: 'names fatherLastName motherLastName -_id'}, { path: "user", select: 'email -_id'}, { path: "clinic", select: 'user name -_id'}]).select('name description ruc phoneNumber -_id').then(campus => {
         if (!campus) {
             return res.status(404).json({
                 status: "Error",

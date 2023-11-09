@@ -48,7 +48,7 @@ const create = async (req, res) => {
                 });
             }
 
-            const populatedConsultationResult = await ConsultationResult.findById(consultationResultStored._id).populate([{ path: "consultation", populate: [{ path: "campus", populate: { path: "clinic", populate: { path: "user" } } }, "patient"] }, 'treatment']);
+            const populatedConsultationResult = await ConsultationResult.findById(consultationResultStored._id).populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name -_id'}]).select('-__v');
 
             return res.status(200).json({
                 "status": "success",
@@ -162,10 +162,10 @@ const myConsultationResultsByCampus = (req, res) => {
 
 const myConsultationResultsClinicByCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
-    let clinicUserId;
+    let clinicId;
 
     try {
-        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+        const campus = await Campus.findOne({ user: userId });
       
         if (!campus) {
           return res.status(404).json({
@@ -174,7 +174,7 @@ const myConsultationResultsClinicByCampus = async (req, res) => {
           });
         }
       
-        clinicUserId = campus.clinic.user._id;
+        clinicId = campus.clinic;
       
     } catch (error) {
         return res.status(500).json({
@@ -183,8 +183,8 @@ const myConsultationResultsClinicByCampus = async (req, res) => {
         });
     }
 
-    ConsultationResult.find().populate([{ path: "consultation", populate: [{ path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, "patient"] }, 'treatment']).then(consultationResults => {
-        consultationResults = consultationResults.filter(consultationResults => consultationResults.consultation.campus.clinic.user);
+    ConsultationResult.find().populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name -_id'}]).select('-__v').then(consultationResults => {
+        consultationResults = consultationResults.filter(consultationResults => consultationResults.consultation.campus.clinic);
         
         if (consultationResults.length == 0) {
             return res.status(404).json({

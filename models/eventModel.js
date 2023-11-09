@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const ConsultationSchema = Schema({
+const EventSchema = Schema({
     patient: {
         type: Schema.ObjectId,
         ref: "Patient"
@@ -13,13 +13,9 @@ const ConsultationSchema = Schema({
         type: Schema.ObjectId,
         ref: "Campus"
     },
-    consultationReason: {
+    reason: {
         type: String,
         default: "No posee motivo"
-    },
-    cost: {
-        type: String,
-        required: true
     },
     date: {
         type: Date,
@@ -27,12 +23,24 @@ const ConsultationSchema = Schema({
     },
     status: {
         type: String,
-        required: true
+        default: "Scheduled"
     },
     hour: {
+        type: String,
+        required: true
+    },
+    typeEvent: {
+        type: String,
+        required: true
+    },
+    eventId: {
+        type: String,
+        required: true
+    },
+    treatmentDetail: {
         type: String,
         required: true
     }
 });
 
-module.exports = model("Consultation", ConsultationSchema, "consultations");
+module.exports = model("Event", EventSchema, "events");

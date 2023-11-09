@@ -41,7 +41,7 @@ const create = async (req, res) => {
             });
         }
 
-        const populatedTreatmentAppointment = await TreatmentAppointment.findById(treatmentAppointmentStored._id).populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: [{ path: "clinic", populate: { path: "user" } }, "user"] }, { path: "treatmentDetail", populate: [{ path: "patient", populate: { path: "personData" } }, { path: "consultationResult", populate: { path: "treatment" } }] } ]);
+        const populatedTreatmentAppointment = await TreatmentAppointment.findById(treatmentAppointmentStored._id).populate([{ path: "doctor", populate: { path: "personData", select: 'names fatherLastName motherLastName -_id' }, select: 'personData -_id' }, { path: "campus", populate: {path: 'clinic', select: 'user -_id' }, select: 'name clinic user -_id' }, { path: "treatmentDetail", select: '_id' } ]).sort('hour').select('-__v');
 
         return res.status(200).json({
             "status": "success",
@@ -338,10 +338,10 @@ const myTreatmentAppointmentsByCampus = async (req, res) => {
 
 const myTreatmentAppointmentsClinicByCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
-    let clinicUserId;
+    let clinicId;
 
     try {
-        const campus = await Campus.findOne({ user: userId }).populate({ path: 'clinic', populate: { path: 'user' } });
+        const campus = await Campus.findOne({ user: userId });
       
         if (!campus) {
           return res.status(404).json({
@@ -350,7 +350,7 @@ const myTreatmentAppointmentsClinicByCampus = async (req, res) => {
           });
         }
       
-        clinicUserId = campus.clinic.user._id;
+        clinicId = campus.clinic;
       
     } catch (error) {
         return res.status(500).json({
@@ -359,8 +359,8 @@ const myTreatmentAppointmentsClinicByCampus = async (req, res) => {
         });
     }
 
-    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData" } }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: { path: "patient", populate: { path: "personData" } } } ]).sort('hourScheduled').then(treatmentAppointments => {
-        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic.user);
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData", select: 'names fatherLastName motherLastName -_id' }, select: 'personData -_id' }, { path: "campus", populate: {path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic user -_id' }, { path: "treatmentDetail", select: '_id' } ]).sort('hour').select('-__v').then(treatmentAppointments => {
+        treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic);
         
         if (treatmentAppointments.length == 0) {
             return res.status(404).json({

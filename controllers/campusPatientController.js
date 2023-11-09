@@ -125,7 +125,7 @@ const createFromCampus = async (req, res) => {
                 });
             }
 
-            const populatedCampusPatient = await CampusesPatients.findById(campusPatientStored._id).populate([{path: "patient", populate: { path: "personData"}}, {path: 'campus', populate: { path: 'user'}}]);
+            const populatedCampusPatient = await CampusesPatients.findById(campusPatientStored._id).populate([{path: "patient", populate: { path: "personData", select: '-_id -__v' }, select: 'personData' }, {path: 'campus', select: 'user -_id'}]).select('patient -_id');
 
             return res.status(200).json({
                 "status": "success",
@@ -194,8 +194,8 @@ const getByCampusId = (req, res) => {
 const getByMyCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
-    CampusesPatients.find().populate([{ path: "patient", populate: { path: "personData" } }, { path: "campus", populate: { path: "user", match: { _id: userId } } }]).sort('_id').then(campusesPatients => {
-        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.campus.user);
+    CampusesPatients.find().populate([{ path: "patient", populate: { path: "personData", select: '-_id -__v' }, select: 'personData' }, { path: "campus", match: { user: userId }, select: 'user -_id' }]).select('patient -_id').then(campusesPatients => {
+        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.campus);
 
         if (campusesPatients.length == 0) {
             return res.status(404).json({

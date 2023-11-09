@@ -7,7 +7,7 @@ const TreatmentAppointmentSchema = Schema({
     },
     description: {
         type: String,
-        required: true
+        default: "No posee descripcion"
     },
     date: {
         type: Date,

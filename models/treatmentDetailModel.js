@@ -21,10 +21,6 @@ const TreatmentDetailSchema = Schema({
         type: Date,
         default: Date.now
     },
-    endDate: {
-        type: Date,
-        default: Date.now
-    },
     patient: {
         type: Schema.ObjectId,
         ref: "Patient"
