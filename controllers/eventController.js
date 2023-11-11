@@ -78,38 +78,11 @@ const createEventConsultation = async (req, res) => {
 
 const createEventTreatmentAppointment = async (req, res) => {
     let body = req.body;
-    let userId = req.user.id;
     let patientId = req.query.idPatient;
     let doctorId = req.query.idDoctor;
+    let campusId = req.query.idCampus;
     let eventId = req.query.idEvent;
     let treatmentDetailId = req.query.idTreatmentDetail;
-    let campusId;
-
-    try {
-        const campus = await Campus.findOne({ user: userId });
-      
-        if (!campus) {
-          return res.status(404).json({
-            status: "Error",
-            message: "No campus available..."
-          });
-        }
-      
-        campusId = campus._id;
-      
-    } catch (error) {
-        return res.status(500).json({
-          status: "error",
-          error
-        });
-    }
-
-    if (!body.date || !body.hour) {
-        return res.status(400).json({
-            "status": "error",
-            "message": "Faltan datos"
-        });
-    }
 
     let bodyEvent = {
         patient: patientId,

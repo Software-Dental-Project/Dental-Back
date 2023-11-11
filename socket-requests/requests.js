@@ -31,22 +31,23 @@ module.exports = (io) => {
 
         socket.on('consultationCreatedCampusInterface', (arg) => {
             io.emit('createdConsultationInCampus', arg);
-            io.emit('createdConsultationInCampusForPatientProfileView', arg.validatorCampus);
-            io.emit('createdConsultationInCampusForDoctorProfileView', arg.validatorCampus);
+            io.emit('createdConsultationInCampusForPatientProfileView', arg.validator);
+            io.emit('createdConsultationInCampusForDoctorProfileView', arg.validator);
             io.emit('createdConsultationInCampusForAgendaView', arg.validatorCampus);
             io.emit('createdConsultationInCampusForHistoryView', arg.validatorCampus);
         });
 
         socket.on('treatmentDetailCreatedCampusInterface', (arg) => {
             io.emit('createdTreatmentDetailInCampus', arg);
-            io.emit('createdTreatmentDetailInCampusForTreatmentDetailView', arg.validator);
+            io.emit('createdTreatmentDetailInCampusForHistoryView', arg.validatorCampus);
+            io.emit('createdTreatmentDetailInCampusForNewTreatmentDetailView', { validatorCampus: arg.validatorCampus, _id: arg.treatmentDetail._id});
         });
 
         socket.on('treatmentAppointmentCreatedCampusInterface', (arg) => {
             io.emit('createdTreatmentAppointmentInCampus', arg);
             io.emit('createdTreatmentAppointmentInCampusForTreatmentDetailView', arg.validator);
-            io.emit('createdTreatmentAppointmentInCampusForPatientProfileView', arg.validatorCampus);
-            io.emit('createdTreatmentAppointmentInCampusForDoctorProfileView', arg.validatorCampus);
+            io.emit('createdTreatmentAppointmentInCampusForPatientProfileView', arg.validator);
+            io.emit('createdTreatmentAppointmentInCampusForDoctorProfileView', arg.validator);
             io.emit('createdTreatmentAppointmentInCampusForAgendaView', arg.validatorCampus);
             io.emit('createdTreatmentAppointmentInCampusForHistoryView', arg.validatorCampus);
         });
