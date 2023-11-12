@@ -60,7 +60,7 @@ const createEventConsultation = async (req, res) => {
             });
         }
 
-        const populatedEvent = await Event.findById(eventStored._id).populate([{ path: "patient", populate: { path: 'personData', select: 'names fatherLastName motherLastName -_id'}, select: 'personData'}, { path: "doctor", populate: { path: 'personData', select: 'names fatherLastName motherLastName -_id'}, select: 'personData'}, { path: 'campus', populate: { path: 'clinic', select: 'user -_id' }, select: 'user name' } ]).select('-_id -__v');
+        const populatedEvent = await Event.findById(eventStored._id).populate([{ path: "patient", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: "doctor", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: 'campus', populate: { path: 'clinic', select: 'user -_id' }, select: 'user name' } ]).select('-__v');
 
         return res.status(200).json({
             "status": "success",
@@ -109,7 +109,7 @@ const createEventTreatmentAppointment = async (req, res) => {
             });
         }
 
-        const populatedEvent = await Event.findById(eventStored._id).populate([{ path: "patient", populate: { path: 'personData', select: 'names fatherLastName motherLastName -_id'}, select: 'personData'}, { path: "doctor", populate: { path: 'personData', select: 'names fatherLastName motherLastName -_id'}, select: 'personData'}, { path: 'campus', populate: { path: 'clinic', select: 'user -_id' }, select: 'user name' } ]).select('-_id -__v');
+        const populatedEvent = await Event.findById(eventStored._id).populate([{ path: "patient", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: "doctor", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: 'campus', populate: { path: 'clinic', select: 'user -_id' }, select: 'user name' } ]).select('-__v');
 
         return res.status(200).json({
             "status": "success",
@@ -258,7 +258,7 @@ const getEventsClinicBySede = async (req, res) => {
         });
     }
 
-    Event.find().populate([{ path: "patient", populate: { path: 'personData', select: 'names fatherLastName motherLastName -_id'}, select: 'personData'}, { path: "doctor", populate: { path: 'personData', select: 'names fatherLastName motherLastName -_id'}, select: 'personData'}, { path: 'campus', populate: { path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'user name' } ]).sort([['date', -1], ['hour', 1]]).select('-_id -__v').then(events => {
+    Event.find().populate([{ path: "patient", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: "doctor", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: 'campus', populate: { path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'user name' } ]).sort([['date', -1], ['hour', 1]]).select('-__v').then(events => {
         events = events.filter(event => event.campus.clinic)
 
         if (events.length == 0) {
@@ -280,11 +280,37 @@ const getEventsClinicBySede = async (req, res) => {
     });
 }
 
+const editEvent = (req, res) => {
+    let id = req.query.idEvent;
+
+    Event.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(async eventUpdated => {
+        if (!eventUpdated) {
+            return res.status(404).json({
+                status: "error",
+                mensaje: "Event not found"
+            });
+        }
+
+        const populatedEvent = await Event.findById(eventUpdated._id).populate([{ path: "patient", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: "doctor", populate: { path: 'personData', select: 'names fatherLastName motherLastName'}, select: 'personData'}, { path: 'campus', populate: { path: 'clinic', select: 'user -_id' }, select: 'user name' } ]).select('-__v');
+
+        return res.status(200).send({
+            status: "success",
+            event: populatedEvent
+        });
+    }).catch(() => {
+        return res.status(404).json({
+            status: "error",
+            mensaje: "Error while finding and updating event"
+        });
+    });
+}
+
 module.exports = {
     createEventConsultation,
     createEventTreatmentAppointment,
     list,
     getAgendaBySede,
     getEventsBySede,
-    getEventsClinicBySede
+    getEventsClinicBySede,
+    editEvent
 }

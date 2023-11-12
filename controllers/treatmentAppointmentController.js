@@ -41,7 +41,7 @@ const create = async (req, res) => {
             });
         }
 
-        const populatedTreatmentAppointment = await TreatmentAppointment.findById(treatmentAppointmentStored._id).populate([{ path: "doctor", populate: { path: "personData", select: 'names fatherLastName motherLastName -_id' }, select: 'personData -_id' }, { path: "campus", populate: {path: 'clinic', select: 'user -_id' }, select: 'name clinic user -_id' }, { path: "treatmentDetail", select: '_id' } ]).sort('hour').select('-__v');
+        const populatedTreatmentAppointment = await TreatmentAppointment.findById(treatmentAppointmentStored._id).populate([{ path: "doctor", populate: { path: "personData", select: 'names fatherLastName motherLastName' }, select: 'personData' }, { path: "campus", populate: {path: 'clinic', select: 'user -_id' }, select: 'name clinic user -_id' }, { path: "treatmentDetail", select: '_id' } ]).sort('hour').select('-__v');
 
         return res.status(200).json({
             "status": "success",
@@ -359,7 +359,7 @@ const myTreatmentAppointmentsClinicByCampus = async (req, res) => {
         });
     }
 
-    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData", select: 'names fatherLastName motherLastName -_id' }, select: 'personData -_id' }, { path: "campus", populate: {path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic user -_id' }, { path: "treatmentDetail", select: '_id' } ]).sort('hour').select('-__v').then(treatmentAppointments => {
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData", select: 'names fatherLastName motherLastName' }, select: 'personData' }, { path: "campus", populate: {path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic user -_id' }, { path: "treatmentDetail", select: '_id' } ]).sort('hour').select('-__v').then(treatmentAppointments => {
         treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic);
         
         if (treatmentAppointments.length == 0) {
@@ -415,16 +415,19 @@ const myTreatmentAppointmentsByCampusForAgenda = (req, res) => {
 const editTreatmentAppointment = (req, res) => {
     let id = req.query.idTreatmentAppointment;
 
-    TreatmentAppointment.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(treatmentAppointmentUpdated => {
+    TreatmentAppointment.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(async treatmentAppointmentUpdated => {
         if (!treatmentAppointmentUpdated) {
             return res.status(404).json({
                 status: "error",
                 mensaje: "Treatment Appointment not found"
             });
         }
+
+        const populatedTreatmentAppointment = await TreatmentAppointment.findById(treatmentAppointmentUpdated._id).populate([{ path: "doctor", populate: { path: "personData", select: 'names fatherLastName motherLastName' }, select: 'personData' }, { path: "campus", populate: {path: 'clinic', select: 'user -_id' }, select: 'name clinic user -_id' }, { path: "treatmentDetail", select: '_id' } ]).sort('hour').select('-__v');
+
         return res.status(200).send({
             status: "success",
-            treatmentAppointment: treatmentAppointmentUpdated
+            treatmentAppointment: populatedTreatmentAppointment
         });
     }).catch(() => {
         return res.status(404).json({

@@ -35,7 +35,7 @@ const create = async (req, res) => {
             });
         }
 
-        const populatedTreatmentDetail = await TreatmentDetail.findById(treatmentDetailStored._id).populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: { path: "campus", populate: { path: "clinic", select: 'user -_id' }, select: 'name clinic user -_id' }, select: 'campus -_id' }, { path: "treatment", select: 'name -_id' }], select: 'campus treatment -_id' }, {path: "patient", populate: { path: "personData", select: 'names fatherLastName motherLastName -_id' }, select: 'personData'} ]).select('-__v');
+        const populatedTreatmentDetail = await TreatmentDetail.findById(treatmentDetailStored._id).populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: { path: "campus", populate: { path: "clinic", select: 'user -_id' }, select: 'name clinic user -_id' }, select: 'campus -_id' }, { path: "treatment", select: 'name -_id' }], select: 'campus treatment -_id' }, {path: "patient", populate: { path: "personData", select: 'names fatherLastName motherLastName' }, select: 'personData'} ]).select('-__v');
 
         return res.status(200).json({
             "status": "success",
@@ -164,7 +164,7 @@ const myTreatmentDetailsClinicByCampus = async (req, res) => {
         });
     }
 
-    TreatmentDetail.find().populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic user -_id' }, select: 'campus -_id' }, { path: "treatment", select: 'name -_id' }], select: 'campus treatment -_id' }, {path: "patient", populate: { path: "personData", select: 'names fatherLastName motherLastName -_id'}, select: 'personData'} ]).select('-__v').then(treatmentDetails => {
+    TreatmentDetail.find().populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic user -_id' }, select: 'campus -_id' }, { path: "treatment", select: 'name -_id' }], select: 'campus treatment -_id' }, {path: "patient", populate: { path: "personData", select: 'names fatherLastName motherLastName'}, select: 'personData'} ]).select('-__v').then(treatmentDetails => {
         treatmentDetails = treatmentDetails.filter(treatmentDetail => treatmentDetail.consultationResult.consultation.campus.clinic);
         
         if (treatmentDetails.length == 0) {
@@ -189,16 +189,19 @@ const myTreatmentDetailsClinicByCampus = async (req, res) => {
 const editTreatmentDetail = (req, res) => {
     let id = req.query.idTreatmentDetail;
 
-    TreatmentDetail.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(treatmentDetailUpdated => {
+    TreatmentDetail.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(async treatmentDetailUpdated => {
         if (!treatmentDetailUpdated) {
             return res.status(404).json({
                 status: "error",
                 mensaje: "Treatment Detail not found"
             });
         }
+
+        const populatedTreatmentDetail = await TreatmentDetail.findById(treatmentDetailUpdated._id).populate([{ path: "consultationResult", populate: [{ path: "consultation", populate: { path: "campus", populate: { path: "clinic", select: 'user -_id' }, select: 'name clinic user -_id' }, select: 'campus -_id' }, { path: "treatment", select: 'name -_id' }], select: 'campus treatment -_id' }, {path: "patient", populate: { path: "personData", select: 'names fatherLastName motherLastName' }, select: 'personData'} ]).select('-__v');
+
         return res.status(200).send({
             status: "success",
-            treatmentDetail: treatmentDetailUpdated
+            treatmentDetail: populatedTreatmentDetail
         });
     }).catch(() => {
         return res.status(404).json({

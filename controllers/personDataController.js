@@ -90,16 +90,19 @@ const personById = (req, res) => {
 const editPerson = (req, res) => {
     let id = req.query.idPerson;
 
-    PersonData.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(personDataUpdated => {
+    PersonData.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(async personDataUpdated => {
         if (!personDataUpdated) {
             return res.status(404).json({
                 status: "error",
                 mensaje: "Person Data not found"
             });
         }
+
+        const populatedPersonData = await PersonData.findById(personDataUpdated._id).select('-__v');
+
         return res.status(200).send({
             status: "success",
-            personData: personDataUpdated
+            personData: populatedPersonData
         });
     }).catch(() => {
         return res.status(404).json({

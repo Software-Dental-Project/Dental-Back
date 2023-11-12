@@ -208,16 +208,19 @@ const myConsultationResultsClinicByCampus = async (req, res) => {
 const editConsultationResult = (req, res) => {
     let id = req.query.idConsultationResult;
 
-    ConsultationResult.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(consultationResultUpdated => {
+    ConsultationResult.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(async consultationResultUpdated => {
         if (!consultationResultUpdated) {
             return res.status(404).json({
                 status: "error",
                 mensaje: "Consultation result not found"
             });
         }
+
+        const populatedConsultationResult = await ConsultationResult.findById(consultationResultUpdated._id).populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name -_id'}]).select('-__v');
+        
         return res.status(200).send({
             status: "success",
-            consultationResult: consultationResultUpdated
+            consultationResult: populatedConsultationResult
         });
     }).catch(() => {
         return res.status(404).json({

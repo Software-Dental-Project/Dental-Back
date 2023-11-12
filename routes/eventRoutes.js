@@ -10,5 +10,6 @@ router.get("/list", EventController.list);
 router.get("/agenda", check.auth, EventController.getAgendaBySede);
 router.get("/history", check.auth, EventController.getEventsBySede);
 router.get("/historyClinic", check.auth, EventController.getEventsClinicBySede);
+router.put("/", EventController.editEvent);
 
 module.exports = router;
