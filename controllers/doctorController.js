@@ -168,7 +168,7 @@ const doctorById = (req, res) => {
 }
 
 const searchDoctorByPersonDataId = (req, res) => {
-    Doctor.find({ personData: req.query.personDataId }).populate().then(doctors => {
+    Doctor.find({ personData: req.query.personDataId }).populate('personData').then(doctors => {
         doctors = doctors.filter(doctor => doctor.personData);
 
         if (!doctors || doctors.length == 0) {

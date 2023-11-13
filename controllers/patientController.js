@@ -160,7 +160,7 @@ const searchPatient = (req, res) => {
 }
 
 const searchPatientByPersonDataId = (req, res) => {
-    Patient.find({ personData: req.query.personDataId }).populate().then(patients => {
+    Patient.find({ personData: req.query.personDataId }).populate('personData').then(patients => {
         patients = patients.filter(patient => patient.personData);
 
         if (!patients || patients.length == 0) {
