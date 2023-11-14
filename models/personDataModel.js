@@ -34,8 +34,11 @@ const PersonDataSchema = Schema({
     },
     email: {
         type: String
+    },
+    profilePic: {
+        type: String,
+        default: "http://www.gravatar.com/avatar"
     }
-    //pendiente poner: Imagen
 });
 
 module.exports = model("PersonData", PersonDataSchema, "peopleData");
