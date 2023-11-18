@@ -194,7 +194,7 @@ const getByCampusId = (req, res) => {
 const getByMyCampus = async (req, res) => {
     let userId = new ObjectId(req.user.id);
 
-    CampusesDoctors.find().populate([{ path: "doctor", populate: [{ path: "personData", select: '-__v' }, { path: "speciality", select: 'name -_id'}], select: 'personData speciality' }, { path: "campus", match: { user: userId }, populate: { path: 'clinic', select: 'user -_id' }, select: 'user clinic -_id' }]).select('doctor -_id').then(campusesDoctors => {
+    CampusesDoctors.find().populate([{ path: "doctor", populate: [{ path: "personData", select: '-__v' }, { path: "speciality", select: 'name -_id'}], select: 'personData speciality tuitionNumber' }, { path: "campus", match: { user: userId }, populate: { path: 'clinic', select: 'user -_id' }, select: 'user clinic -_id' }]).select('doctor -_id').then(campusesDoctors => {
         campusesDoctors = campusesDoctors.filter(campusDoctor => campusDoctor.campus);
         
         if (campusesDoctors.length == 0) {
