@@ -23,7 +23,7 @@ const TreatmentAppointmentSchema = Schema({
     },
     cost: {
         type: String,
-        required: true
+        default: "0"
     },
     doctor: {
         type: Schema.ObjectId,

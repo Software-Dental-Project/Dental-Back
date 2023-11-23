@@ -19,7 +19,7 @@ const ConsultationSchema = Schema({
     },
     cost: {
         type: String,
-        required: true
+        default: "0"
     },
     date: {
         type: Date,
