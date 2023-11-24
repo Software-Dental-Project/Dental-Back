@@ -11,7 +11,7 @@ const create = async (req, res) => {
     let doctorId = req.query.idDoctor;
     let campusId = req.query.idCampus;
 
-    if (!body.description || !body.hour || !body.cost || !body.date) {
+    if (!body.hour || !body.date) {
         return res.status(400).json({
             "status": "error",
             "message": "Missing data"
@@ -26,7 +26,8 @@ const create = async (req, res) => {
         hour: body.hour,
         cost: body.cost,
         doctor: doctorId,
-        campus: campusId
+        campus: campusId,
+        duration: body.duration
     }
 
     let treatment_appointment_to_save = new TreatmentAppointment(bodyTreatmentAppointment);

@@ -32,6 +32,10 @@ const TreatmentAppointmentSchema = Schema({
     campus: {
         type: Schema.ObjectId,
         ref: "Campus"
+    },
+    duration: {
+        type: Number,
+        default: 1
     }
 });
 

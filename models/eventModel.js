@@ -40,6 +40,10 @@ const EventSchema = Schema({
     treatmentDetail: {
         type: String,
         required: true
+    },
+    duration: {
+        type: Number,
+        default: 1
     }
 });
 

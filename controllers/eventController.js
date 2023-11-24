@@ -45,7 +45,8 @@ const createEventConsultation = async (req, res) => {
         hour: body.hour,
         typeEvent: "Consulta",
         eventId: eventId,
-        treatmentDetail: "No"
+        treatmentDetail: "No",
+        duration: body.duration
     }
 
     let event_to_save = new Event(bodyEvent);
@@ -94,7 +95,8 @@ const createEventTreatmentAppointment = async (req, res) => {
         hour: body.hour,
         typeEvent: "Cita",
         eventId: eventId,
-        treatmentDetail: treatmentDetailId
+        treatmentDetail: treatmentDetailId,
+        duration: body.duration
     }
 
     let event_to_save = new Event(bodyEvent);

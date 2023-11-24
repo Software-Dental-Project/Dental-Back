@@ -44,7 +44,8 @@ const create = async (req, res) => {
         cost: body.cost,
         date: body.date,
         status: "Scheduled",
-        hour: body.hour
+        hour: body.hour,
+        duration: body.duration
     }
 
     let consultation_to_save = new Consultation(bodyConsultation);

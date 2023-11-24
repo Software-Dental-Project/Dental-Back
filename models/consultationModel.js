@@ -32,6 +32,10 @@ const ConsultationSchema = Schema({
     hour: {
         type: String,
         required: true
+    },
+    duration: {
+        type: Number,
+        default: 1
     }
 });
 
