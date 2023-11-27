@@ -29,10 +29,17 @@ const create = async (req, res) => {
         });
     }
 
-    if (!body.date || !body.hour) {
+    if (!body.date || !body.hour || patientId == "undefined") {
         return res.status(400).json({
             "status": "error",
             "message": "Faltan datos"
+        });
+    }
+
+    if (isNaN(body.cost)) {
+        return res.status(400).json({
+            "status": "error",
+            "message": "El campo costo no es un número"
         });
     }
 

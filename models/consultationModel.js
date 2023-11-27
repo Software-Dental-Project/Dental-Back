@@ -18,8 +18,8 @@ const ConsultationSchema = Schema({
         default: "No posee motivo"
     },
     cost: {
-        type: String,
-        default: "0"
+        type: Number,
+        default: 0.0
     },
     date: {
         type: Date,
