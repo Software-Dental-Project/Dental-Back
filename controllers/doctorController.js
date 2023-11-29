@@ -1,4 +1,6 @@
 const Doctor = require("../models/doctorModel");
+const cloudinary = require('cloudinary');
+const fs = require("fs");
 
 const create = async (req, res) => {
     let body = req.body;
@@ -190,11 +192,49 @@ const searchDoctorByPersonDataId = (req, res) => {
     });
 }
 
+const uploadImage = async (req, res) => {
+    if(!req.file){
+        return res.status(400).json({
+            "status": "error",
+            "message": "Missing image"
+        });
+    }
+
+    const imageSplit = req.file.originalname.split("\.");
+    const extension = imageSplit[1];
+
+    if(extension != "png" && extension != "jpg" && extension != "jpeg"){
+        fs.unlinkSync(req.file.path);
+
+        return res.status(400).json({
+            "status": "error",
+            "message": "Invalid file extension"
+        });
+    }
+
+    try {
+        const response = await cloudinary.v2.uploader.upload(req.file.path, { public_id: req.file.originalname });
+
+        fs.unlinkSync(req.file.path);
+
+        return res.status(200).json({
+            "status": "success",
+            "url": response.url
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "error",
+            error
+        });
+    }
+}
+
 module.exports = {
     create,
     createWithoutUser,
     myDoctor,
     list,
     doctorById,
-    searchDoctorByPersonDataId
+    searchDoctorByPersonDataId,
+    uploadImage
 }

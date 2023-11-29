@@ -16,6 +16,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const cloudinary = require('cloudinary');
+cloudinary.v2.config({
+    cloud_name: 'dfocnzgji', 
+    api_key: '531845593354174', 
+    api_secret: 'VEJEgpcMXtydiaLi4BJUiZfbhNc'
+});
+
 const UserRoutes = require("./routes/userRoutes");
 const ClinicRoutes = require("./routes/clinicRoutes");
 const PersonDataRoutes = require("./routes/personDataRoutes");
