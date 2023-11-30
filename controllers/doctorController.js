@@ -1,5 +1,6 @@
 const Doctor = require("../models/doctorModel");
 const cloudinary = require('cloudinary');
+const { log } = require("console");
 const fs = require("fs");
 
 const create = async (req, res) => {
@@ -201,7 +202,8 @@ const uploadImage = async (req, res) => {
     }
 
     const imageSplit = req.file.originalname.split("\.");
-    const extension = imageSplit[1];
+    const extension = imageSplit[imageSplit.length - 1];
+    const fileName = imageSplit.slice(0, -1).join(".");
 
     if(extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "PNG" && extension != "JPG" && extension != "JPEG"){
         fs.unlinkSync(req.file.path);
@@ -213,7 +215,7 @@ const uploadImage = async (req, res) => {
     }
 
     try {
-        const response = await cloudinary.v2.uploader.upload(req.file.path, { public_id: req.file.originalname });
+        const response = await cloudinary.v2.uploader.upload(req.file.path, { public_id: fileName });
 
         fs.unlinkSync(req.file.path);
 
