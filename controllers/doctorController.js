@@ -203,7 +203,7 @@ const uploadImage = async (req, res) => {
     const imageSplit = req.file.originalname.split("\.");
     const extension = imageSplit[1];
 
-    if(extension != "png" && extension != "jpg" && extension != "jpeg"){
+    if(extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "PNG" && extension != "JPG" && extension != "JPEG"){
         fs.unlinkSync(req.file.path);
 
         return res.status(400).json({
