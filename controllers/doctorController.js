@@ -1,6 +1,6 @@
 const Doctor = require("../models/doctorModel");
+const PersonData = require("../models/personDataModel");
 const cloudinary = require('cloudinary');
-const { log } = require("console");
 const fs = require("fs");
 
 const create = async (req, res) => {
@@ -203,7 +203,6 @@ const uploadImage = async (req, res) => {
 
     const imageSplit = req.file.originalname.split("\.");
     const extension = imageSplit[imageSplit.length - 1];
-    const fileName = imageSplit.slice(0, -1).join(".");
 
     if(extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "PNG" && extension != "JPG" && extension != "JPEG"){
         fs.unlinkSync(req.file.path);
@@ -215,13 +214,29 @@ const uploadImage = async (req, res) => {
     }
 
     try {
-        const response = await cloudinary.v2.uploader.upload(req.file.path, { public_id: fileName });
+        const response = await cloudinary.v2.uploader.upload(req.file.path, { public_id: "D-" + req.body.id });
 
         fs.unlinkSync(req.file.path);
 
-        return res.status(200).json({
-            "status": "success",
-            "url": response.url
+        PersonData.findOneAndUpdate({ _id: req.body.id }, { profilePic: response.url }, { new: true }).then(async personDataUpdated => {
+            if (!personDataUpdated) {
+                return res.status(404).json({
+                    status: "error",
+                    mensaje: "Person Data not found"
+                });
+            }
+
+            const populatedPersonData = await PersonData.findById(personDataUpdated._id).select('-__v');
+
+            return res.status(200).send({
+                status: "success",
+                personData: populatedPersonData
+            });
+        }).catch(() => {
+            return res.status(404).json({
+                status: "error",
+                mensaje: "Error while finding and updating person data"
+            });
         });
     } catch (error) {
         return res.status(500).json({
