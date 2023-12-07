@@ -1,9 +1,9 @@
 const { Schema, model } = require("mongoose");
 
 const TreatmentDetailSchema = Schema({
-    consultationResult: {
+    consultation: {
         type: Schema.ObjectId,
-        ref: "ConsultationResult"
+        ref: "Consultation"
     },
     description: {
         type: String,
@@ -28,7 +28,11 @@ const TreatmentDetailSchema = Schema({
     status: {
         type: String,
         default: "Incomplete"
-    }
+    },
+    treatment: {
+        type: Schema.ObjectId,
+        ref: "Treatment"
+    },
 });
 
 module.exports = model("TreatmentDetail", TreatmentDetailSchema, "treatmentDetails");
