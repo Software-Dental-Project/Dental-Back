@@ -154,7 +154,7 @@ const getByPatientId = async (req, res) => {
         });
     }
 
-    TreatmentAppointment.find({ campus: campusId }).populate([{ path: "doctor", populate: { path: "personData" } }, "campus", { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", match: { _id: patientId } }] } ]).sort('_id').then(treatmentAppointments => {
+    TreatmentAppointment.find({ campus: campusId }).populate([{ path: "doctor", populate: { path: "personData" } }, "campus", { path: "treatmentDetail", populate: [{ path: "presupuest", populate: "treatment" }, { path: "patient", match: { _id: patientId } }] } ]).sort('_id').then(treatmentAppointments => {
         treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.treatmentDetail.patient);
         
         if (treatmentAppointments.length == 0) {
@@ -202,7 +202,7 @@ const getByDoctorId = async (req, res) => {
         });
     }
 
-    TreatmentAppointment.find({ campus: campusId }).populate([{ path: "doctor", match: { _id: doctorId }, populate: { path: "personData"} }, "campus", { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
+    TreatmentAppointment.find({ campus: campusId }).populate([{ path: "doctor", match: { _id: doctorId }, populate: { path: "personData"} }, "campus", { path: "treatmentDetail", populate: [{ path: "presupuest", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
         treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.doctor);
         
         if (treatmentAppointments.length == 0) {
@@ -249,7 +249,7 @@ const getDoctorsAppointmentsGroupedByCampusToken = async (req, res) => {
         });
     }
 
-    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData"} }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData"} }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: [{ path: "presupuest", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
         treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic.user);
         if (treatmentAppointments.length == 0) {
             return res.status(404).json({
@@ -295,7 +295,7 @@ const getPatientsAppointmentsGroupedByCampusToken = async (req, res) => {
         });
     }
 
-    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData"} }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: [{ path: "consultationResult", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
+    TreatmentAppointment.find().populate([{ path: "doctor", populate: { path: "personData"} }, { path: "campus", populate: { path: "clinic", populate: { path: "user", match: { _id: clinicUserId } } } }, { path: "treatmentDetail", populate: [{ path: "presupuest", populate: "treatment" }, { path: "patient", populate: "personData" }] } ]).sort('_id').then(treatmentAppointments => {
         treatmentAppointments = treatmentAppointments.filter(treatmentAppointment => treatmentAppointment.campus.clinic.user);
 
         if (treatmentAppointments.length == 0) {

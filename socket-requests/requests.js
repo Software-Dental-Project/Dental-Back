@@ -23,9 +23,9 @@ module.exports = (io) => {
             io.emit('createdDoctorInCampus', arg);
             io.emit('refreshDoctorsForDoctorsView', arg.validator);
         });
-        socket.on('consultationResultCreatedCampusInterface', (arg) => {
-            io.emit('createdConsultationResultInCampus', arg);
-            io.emit('refreshConsultationResultsForConsultationDetailView', arg.validator);
+        socket.on('presupuestCreatedCampusInterface', (arg) => {
+            io.emit('createdPresupuestInCampus', arg);
+            io.emit('refreshPresupuestsForConsultationDetailView', arg.validator);
         });
         socket.on('consultationCreatedCampusInterface', (arg) => {
             io.emit('createdConsultationInCampus', arg);
@@ -53,10 +53,10 @@ module.exports = (io) => {
             io.emit('updatedEventInCampus', arg);
             io.emit('refreshHistoryForHomeView', arg.validatorCampus);
         });
-        socket.on('consultationResultUpdatedCampusInterface', (arg) => {
-            io.emit('updatedConsultationResultInCampus', arg);
-            io.emit('refreshConsultationResultsForConsultationDetailView', arg.validator);
-            io.emit('updatedConsultationResultInCampusForConsultationResultDialog', arg.validatorConsultationResult);
+        socket.on('presupuestUpdatedCampusInterface', (arg) => {
+            io.emit('updatedPresupuestInCampus', arg);
+            io.emit('refreshPresupuestsForConsultationDetailView', arg.validator);
+            io.emit('updatedPresupuestInCampusForPresupuestDialog', arg.validatorPresupuest);
         });
         socket.on('treatmentDetailUpdatedCampusInterface', (arg) => {
             io.emit('updatedTreatmentDetailInCampus', arg);

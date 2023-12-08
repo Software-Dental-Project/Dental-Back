@@ -12,7 +12,7 @@ const groupByTreatmentDetail = treatmentAppointments => {
     });
   
     const result = Array.from(grouped).map(([treatmentDetailId, appointments]) => {
-        const treatment = appointments[0].treatmentDetail.consultationResult.treatment.name;
+        const treatment = appointments[0].treatmentDetail.presupuest.treatment.name;
         const treatmentId = appointments[0].treatmentDetail._id;
         return {
             treatment: treatment,
@@ -41,7 +41,7 @@ const groupDoctorsAppointmentByTreatmentDetail = treatmentAppointments => {
     });
   
     const result = Array.from(grouped).map(([groupKey, appointments]) => {
-        const treatment = appointments[0].treatmentDetail.consultationResult.treatment.name;
+        const treatment = appointments[0].treatmentDetail.presupuest.treatment.name;
         const [treatmentDetailId, doctorId] = groupKey.split('_');
         return {
             treatment: treatment,
@@ -71,7 +71,7 @@ const groupPatientsAppointmentByTreatmentDetail = treatmentAppointments => {
     });
   
     const result = Array.from(grouped).map(([groupKey, appointments]) => {
-        const treatment = appointments[0].treatmentDetail.consultationResult.treatment.name;
+        const treatment = appointments[0].treatmentDetail.presupuest.treatment.name;
         const [treatmentDetailId, patientId] = groupKey.split('_');
         return {
             treatment: treatment,
