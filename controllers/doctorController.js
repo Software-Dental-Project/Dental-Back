@@ -201,18 +201,6 @@ const uploadImage = async (req, res) => {
         });
     }
 
-    const imageSplit = req.file.originalname.split("\.");
-    const extension = imageSplit[imageSplit.length - 1];
-
-    if(extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "PNG" && extension != "JPG" && extension != "JPEG"){
-        fs.unlinkSync(req.file.path);
-
-        return res.status(400).json({
-            "status": "error",
-            "message": "Invalid file extension"
-        });
-    }
-
     try {
         const response = await cloudinary.v2.uploader.upload(req.file.path, { public_id: "D-" + req.body.id });
 
