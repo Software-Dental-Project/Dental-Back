@@ -50,7 +50,7 @@ const create = async (req, res) => {
         consultationReason: body.consultationReason,
         cost: body.cost,
         date: body.date,
-        status: "Scheduled",
+        status: "Agendado",
         hour: body.hour,
         duration: body.duration
     }

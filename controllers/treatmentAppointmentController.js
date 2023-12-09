@@ -29,7 +29,7 @@ const create = async (req, res) => {
         treatmentDetail: treatmentDetailId,
         description: body.description,
         date: body.date,
-        status: "Scheduled",
+        status: "Agendado",
         hour: body.hour,
         cost: body.cost,
         doctor: doctorId,

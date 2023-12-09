@@ -23,7 +23,7 @@ const EventSchema = Schema({
     },
     status: {
         type: String,
-        default: "Scheduled"
+        default: "Agendado"
     },
     hour: {
         type: String,
