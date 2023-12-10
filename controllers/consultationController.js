@@ -36,13 +36,6 @@ const create = async (req, res) => {
         });
     }
 
-    if (isNaN(body.cost)) {
-        return res.status(400).json({
-            "status": "error",
-            "message": "El campo costo no es un número"
-        });
-    }
-
     let bodyConsultation = {
         patient: patientId,
         doctor: doctorId,
