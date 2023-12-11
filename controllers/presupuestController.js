@@ -8,7 +8,7 @@ const create = async (req, res) => {
     let consultationId = req.query.idConsultation;
     let treatmentId = req.query.idTreatment;
 
-    if (!body.quantity || !body.unitCost || !body.problemFound || !body.discount) {
+    if (!body.quantity || !body.unitCost || body.discount == null) {
         return res.status(400).json({
             "status": "error",
             "message": "Faltan datos"
