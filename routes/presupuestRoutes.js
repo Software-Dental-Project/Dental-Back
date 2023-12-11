@@ -11,5 +11,6 @@ router.get("/consultation", PresupuestController.getByConsultationId);
 router.get("/myPresupuestsByCampus", check.auth, PresupuestController.myPresupuestsByCampus);
 router.get("/myPresupuestsClinicByCampus", check.auth, PresupuestController.myPresupuestsClinicByCampus);
 router.put("/", PresupuestController.editPresupuest);
+router.delete("/", PresupuestController.deleteById);
 
 module.exports = router;

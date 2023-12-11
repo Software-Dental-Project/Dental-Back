@@ -13,6 +13,11 @@ module.exports = (io) => {
             io.emit('refreshPatientsForPatientsView', arg.validator);
             io.emit('deletedPatientInCampusForPatientProfileView', arg.validator);
         });
+        socket.on('presupuestDeletedCampusInterface', (arg) => {
+            io.emit('deletedPresupuestInCampus', arg);
+            io.emit('refreshPresupuestsForConsultationDetailView', arg.validator);
+            io.emit('deletedPresupuestInCampusForPresupuestDialog', arg.validatorPresupuest);
+        });
 
         //Create
         socket.on('patientCreatedCampusInterface', (arg) => {

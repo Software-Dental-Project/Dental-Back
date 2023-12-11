@@ -217,6 +217,28 @@ const editPresupuest = (req, res) => {
     });
 }
 
+const deleteById = async (req, res) => {
+    let presupuestId = req.query.idPresupuest;
+
+    Presupuest.findOneAndDelete({ "_id": presupuestId }).then(presupuestDeleted => {
+        if (!presupuestDeleted) {
+            return res.status(500).json({
+                "status": "error",
+                "message": "No presupuest found"
+            });
+        }
+        return res.status(200).json({
+            "status": "success",
+            "message": "Presupuesto eliminado satisfactoriamente"
+        });
+    }).catch(() => {
+        return res.status(500).json({
+            "status": "error",
+            "message": "Error while deleting presupuest"
+        });
+    });
+}
+
 module.exports = {
     create,
     list,
@@ -224,5 +246,6 @@ module.exports = {
     getByConsultationId,
     myPresupuestsByCampus,
     myPresupuestsClinicByCampus,
-    editPresupuest
+    editPresupuest,
+    deleteById
 }
