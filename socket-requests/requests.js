@@ -23,10 +23,12 @@ module.exports = (io) => {
         socket.on('patientCreatedCampusInterface', (arg) => {
             io.emit('createdPatientInCampus', arg);
             io.emit('refreshPatientsForPatientsView', arg.validator);
+            io.emit('createdPatientInCampusForNewPatientView', { validator: arg.validator, _id: arg.patient.patient._id});
         });
         socket.on('doctorCreatedCampusInterface', (arg) => {
             io.emit('createdDoctorInCampus', arg);
             io.emit('refreshDoctorsForDoctorsView', arg.validator);
+            io.emit('createdDoctorInCampusForNewDoctorView', { validator: arg.validator, _id: arg.doctor.doctor._id});
         });
         socket.on('presupuestCreatedCampusInterface', (arg) => {
             io.emit('createdPresupuestInCampus', arg);
