@@ -15,18 +15,15 @@ const create = async (req, res) => {
         });
     }
 
-    let initialCost = body.quantity * body.unitCost;
-    let finalCost = initialCost - body.discount;
-
     let bodyPresupuest = {
         consultation: consultationId,
         treatment: treatmentId,
         quantity: body.quantity,
         unitCost: body.unitCost,
         problemFound: body.problemFound,
-        initialCost: initialCost,
+        initialCost: body.initialCost,
         discount: body.discount,
-        finalCost: finalCost
+        finalCost: body.finalCost
     }
 
     let presupuest_to_save = new Presupuest(bodyPresupuest);

@@ -40,6 +40,7 @@ module.exports = (io) => {
             io.emit('refreshHistoryForDoctorProfileView', arg.validator);
             io.emit('refreshHistoryForHomeView', arg.validatorCampus);
             io.emit('refreshHistoryForHistoryView', arg.validatorCampus);
+            io.emit('refreshHistoryForAgendaView', arg.validatorCampus);
             io.emit('createdConsultationInCampusForNewConsultationView', { validatorCampus: arg.validatorCampus, _id: arg.consultation._id});
         });
         socket.on('treatmentDetailCreatedCampusInterface', (arg) => {
@@ -54,6 +55,7 @@ module.exports = (io) => {
             io.emit('refreshHistoryForDoctorProfileView', arg.validator);
             io.emit('refreshHistoryForHomeView', arg.validatorCampus);
             io.emit('refreshHistoryForHistoryView', arg.validatorCampus);
+            io.emit('refreshHistoryForAgendaView', arg.validatorCampus);
         });
 
         //Update

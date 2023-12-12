@@ -19,7 +19,7 @@ const PresupuestSchema = Schema({
     },
     problemFound: {
         type: String,
-        required: true
+        default: "No posee descripcion"
     },
     initialCost: {
         type: Number
