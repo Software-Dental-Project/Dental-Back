@@ -38,6 +38,7 @@ module.exports = (io) => {
             io.emit('refreshHistoryForDoctorProfileView', arg.validator);
             io.emit('refreshHistoryForHomeView', arg.validatorCampus);
             io.emit('refreshHistoryForHistoryView', arg.validatorCampus);
+            io.emit('createdConsultationInCampusForNewConsultationView', { validatorCampus: arg.validatorCampus, _id: arg.consultation._id});
         });
         socket.on('treatmentDetailCreatedCampusInterface', (arg) => {
             io.emit('createdTreatmentDetailInCampus', arg);
