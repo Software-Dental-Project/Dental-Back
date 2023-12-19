@@ -8,12 +8,14 @@ const create = async (req, res) => {
     let consultationId = req.query.idConsultation;
     let treatmentId = req.query.idTreatment;
 
-    if (!body.quantity || !body.unitCost || body.discount == null) {
+    if (!body.quantity || body.unitCost == null || body.discount == null) {
         return res.status(400).json({
             "status": "error",
             "message": "Faltan datos"
         });
     }
+
+    let discount = body.initialCost - body.finalCost;
 
     let bodyPresupuest = {
         consultation: consultationId,
@@ -22,7 +24,7 @@ const create = async (req, res) => {
         unitCost: body.unitCost,
         problemFound: body.problemFound,
         initialCost: body.initialCost,
-        discount: body.discount,
+        discount: discount,
         finalCost: body.finalCost
     }
 

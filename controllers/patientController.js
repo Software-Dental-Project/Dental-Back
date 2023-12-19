@@ -175,7 +175,7 @@ const searchPatientByPersonDataId = (req, res) => {
 
         return res.status(200).json({
             "status": "success",
-            "patient": patients
+            "patients": patients
         });
     }).catch(() => {
         return res.status(404).json({

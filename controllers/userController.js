@@ -99,7 +99,7 @@ const login = (req, res) => {
             "status": "success",
             "message": "You have identified correctly",
             user: {
-                id: user._id,
+                _id: user._id,
                 email: user.email,
                 role: user.role
             },

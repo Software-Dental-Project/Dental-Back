@@ -183,7 +183,7 @@ const searchDoctorByPersonDataId = (req, res) => {
 
         return res.status(200).json({
             "status": "success",
-            "doctor": doctors
+            "doctors": doctors
         });
     }).catch(() => {
         return res.status(404).json({

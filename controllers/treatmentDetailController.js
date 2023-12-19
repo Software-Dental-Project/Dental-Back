@@ -12,7 +12,7 @@ const create = async (req, res) => {
     if (!body.description || !body.initialCost) {
         return res.status(400).json({
             "status": "error",
-            "message": "Missing data"
+            "message": "Faltan datos"
         });
     }
 

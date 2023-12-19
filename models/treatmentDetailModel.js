@@ -27,7 +27,7 @@ const TreatmentDetailSchema = Schema({
     },
     status: {
         type: String,
-        default: "Incomplete"
+        default: "Incompleto"
     },
     treatment: {
         type: Schema.ObjectId,

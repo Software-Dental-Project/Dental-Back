@@ -45,8 +45,8 @@ app.use("/api/personData", PersonDataRoutes);
 app.use("/api/campuses", CampusRoutes);
 app.use("/api/specialities", SpecialityRoutes);
 app.use("/api/doctors", DoctorRoutes);
-app.use("/api/campusesdoctors", CampusDoctorRoutes);
-app.use("/api/campusespatients", CampusPatientRoutes);
+app.use("/api/campusesDoctors", CampusDoctorRoutes);
+app.use("/api/campusesPatients", CampusPatientRoutes);
 app.use("/api/patients", PatientsRoutes);
 app.use("/api/consultations", ConsultationRoutes);
 app.use("/api/presupuests", PresupuestRoutes);
@@ -60,7 +60,7 @@ app.get("/test-route", (req, res) => {
     return res.status(200).json({
         "id": 1,
         "name": "Jose Lopez",
-        "version": "1.9.0"
+        "version": "2.0.0"
     });
 });
 

@@ -284,10 +284,10 @@ const searchPatientsByMyCampusAndDni = async (req, res) => {
         });
     }
 
-    CampusesPatients.find({ campus: campusId }).populate([{ path: 'patient', populate: { path: 'personData', match: { dni: req.query.dni } } }, "campus"]).sort('_id').then(campusesPatient => {
-        campusesPatient = campusesPatient.filter(campusPatient => campusPatient.patient.personData)
+    CampusesPatients.find({ campus: campusId }).populate([{ path: 'patient', populate: { path: 'personData', match: { dni: req.query.dni } } }, "campus"]).sort('_id').then(campusesPatients => {
+        campusesPatients = campusesPatients.filter(campusPatient => campusPatient.patient.personData)
 
-        if (!campusesPatient || campusesPatient.length == 0) {
+        if (!campusesPatients || campusesPatients.length == 0) {
             return res.status(404).json({
                 status: "Error",
                 message: "No existe paciente en sede"
@@ -296,7 +296,7 @@ const searchPatientsByMyCampusAndDni = async (req, res) => {
 
         return res.status(200).json({
             "status": "success",
-            campusesPatient
+            campusesPatients
         });
     }).catch(error => {
         return res.status(500).json({

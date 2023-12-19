@@ -29,10 +29,10 @@ const create = async (req, res) => {
         });
     }
 
-    if (!body.date || !body.hour || patientId == "undefined") {
+    if (!body.date || !body.hour) {
         return res.status(400).json({
             "status": "error",
-            "message": "Faltan datos"
+            "message": "Faltan datos de hora o fecha"
         });
     }
 

@@ -118,10 +118,10 @@ const searchClinicPersonDataByDni = async (req, res) => {
         });
     }
 
-    ClinicPersonData.find({ clinic: clinicId }).populate({ path: "personData", match: { dni: req.query.dni } }).sort('_id').then(clinicPersonData => {
-        clinicPersonData = clinicPersonData.filter(clinicPersonData => clinicPersonData.personData);
+    ClinicPersonData.find({ clinic: clinicId }).populate({ path: "personData", match: { dni: req.query.dni } }).sort('_id').then(clinicsPersonData => {
+        clinicsPersonData = clinicsPersonData.filter(clinicPersonData => clinicPersonData.personData);
         
-        if (clinicPersonData.length == 0) {
+        if (clinicsPersonData.length == 0) {
             return res.status(404).json({
                 status: "Error",
                 message: "No existe data de la persona en la clinica"
@@ -130,7 +130,7 @@ const searchClinicPersonDataByDni = async (req, res) => {
 
         return res.status(200).json({
             "status": "success",
-            clinicPersonData
+            clinicsPersonData
         });
     }).catch(error => {
         return res.status(500).json({

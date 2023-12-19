@@ -14,14 +14,7 @@ const create = async (req, res) => {
     if (!body.hour || !body.date) {
         return res.status(400).json({
             "status": "error",
-            "message": "Faltan datos"
-        });
-    }
-
-    if (isNaN(body.cost)) {
-        return res.status(400).json({
-            "status": "error",
-            "message": "El campo costo no es un número"
+            "message": "Faltan datos de hora o fecha"
         });
     }
 
