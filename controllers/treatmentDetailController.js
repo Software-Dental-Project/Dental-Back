@@ -9,7 +9,7 @@ const create = async (req, res) => {
     let patientId = req.query.idPatient;
     let treatmentId = req.query.idTreatment;
 
-    if (!body.presupuested || !body.startDate) {
+    if (body.presupuested == null || !body.startDate) {
         return res.status(400).json({
             "status": "error",
             "message": "Faltan datos"
@@ -22,7 +22,8 @@ const create = async (req, res) => {
         initialCost: body.initialCost,
         patient: patientId,
         treatment: treatmentId,
-        presupuested: body.presupuested
+        presupuested: body.presupuested,
+        startDate: body.startDate
     }
 
     let treatment_detail_to_save = new TreatmentDetail(bodyTreatmentDetail);
