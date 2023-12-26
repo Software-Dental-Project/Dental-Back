@@ -36,6 +36,10 @@ const ConsultationSchema = Schema({
     duration: {
         type: Number,
         default: 1
+    },
+    discount: {
+        type: Number,
+        default: 0.0
     }
 });
 

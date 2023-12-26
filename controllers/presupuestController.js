@@ -40,7 +40,7 @@ const create = async (req, res) => {
             });
         }
 
-        const populatedPresupuest = await Presupuest.findById(presupuestStored._id).populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name -_id'}]).select('-__v');
+        const populatedPresupuest = await Presupuest.findById(presupuestStored._id).populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name'}]).select('-__v');
 
         return res.status(200).json({
             "status": "success",
@@ -169,7 +169,7 @@ const myPresupuestsClinicByCampus = async (req, res) => {
         });
     }
 
-    Presupuest.find().populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name -_id'}]).select('-__v').then(presupuests => {
+    Presupuest.find().populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', match: { _id: clinicId }, select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name'}]).select('-__v').then(presupuests => {
         presupuests = presupuests.filter(presupuest => presupuest.consultation.campus.clinic);
         
         if (presupuests.length == 0) {
@@ -202,7 +202,7 @@ const editPresupuest = (req, res) => {
             });
         }
 
-        const populatedPresupuest = await Presupuest.findById(presupuestUpdated._id).populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name -_id'}]).select('-__v');
+        const populatedPresupuest = await Presupuest.findById(presupuestUpdated._id).populate([{ path: "consultation", populate: { path: "campus", populate: { path: 'clinic', select: 'user -_id' }, select: 'name clinic -_id' }, select: 'campus' }, { path: 'treatment', select: 'name'}]).select('-__v');
         
         return res.status(200).send({
             status: "success",

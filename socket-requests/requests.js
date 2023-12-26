@@ -86,6 +86,7 @@ module.exports = (io) => {
             io.emit('updatedEventInCampus', arg);
             io.emit('refreshHistoryForHomeView', arg.validatorCampus);
             io.emit('refreshHistoryForHistoryView', arg.validatorCampus);
+            io.emit('refreshHistoryForAgendaView', arg.validatorCampus);
             io.emit('refreshHistoryForPatientProfileView', arg.validator);
             io.emit('refreshHistoryForDoctorProfileView', arg.validator);
         });
@@ -102,6 +103,7 @@ module.exports = (io) => {
             io.emit('refreshConsultationsForConsultationDetailView', arg.validator);
             io.emit('refreshTreatmentDetailsForTreatmentDetailView', arg.validator);
             io.emit('refreshHistoryForDoctorProfileView', arg.validator);
+            io.emit('refreshHistoryForAgendaViewClinic', arg.validator);
         });
         socket.on('doctorGeneralInfoUpdatedCampusInterface', (arg) => {
             io.emit('updatedDoctorGeneralInfoInCampus', arg);
@@ -117,6 +119,7 @@ module.exports = (io) => {
             io.emit('refreshTreatmentAppointmentsForTreatmentDetailView', arg.validator);
             io.emit('updatedDoctorImportantInfoInCampusForTreatmentAppointmentDialog', arg.validatorPersonData);
             io.emit('refreshHistoryForPatientProfileView', arg.validator);
+            io.emit('refreshHistoryForAgendaViewClinic', arg.validator);
         });
     });
 }

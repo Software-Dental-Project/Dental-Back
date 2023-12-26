@@ -7,15 +7,11 @@ const TreatmentDetailSchema = Schema({
     },
     description: {
         type: String,
-        required: true
+        default: "No posee motivo"
     },
     initialCost: {
-        type: String,
-        required: true
-    },
-    finalCost: {
-        type: String,
-        required: true
+        type: Number,
+        default: 0.0
     },
     startDate: {
         type: Date,
@@ -27,12 +23,16 @@ const TreatmentDetailSchema = Schema({
     },
     status: {
         type: String,
-        default: "Incompleto"
+        default: "En curso"
     },
     treatment: {
         type: Schema.ObjectId,
         ref: "Treatment"
     },
+    presupuested: {
+        type: Number,
+        default: 0.0
+    }
 });
 
 module.exports = model("TreatmentDetail", TreatmentDetailSchema, "treatmentDetails");
