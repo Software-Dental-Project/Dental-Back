@@ -16,6 +16,7 @@ module.exports = (io) => {
         socket.on('presupuestDeletedCampusInterface', (arg) => {
             io.emit('deletedPresupuestInCampus', arg);
             io.emit('refreshPresupuestsForConsultationDetailView', arg.validator);
+            io.emit('refreshPresupuestsForNewTreatmentDetailView', arg.validator);
             io.emit('deletedPresupuestInCampusForPresupuestDialog', arg.validatorPresupuest);
         });
 
@@ -33,6 +34,7 @@ module.exports = (io) => {
         socket.on('presupuestCreatedCampusInterface', (arg) => {
             io.emit('createdPresupuestInCampus', arg);
             io.emit('refreshPresupuestsForConsultationDetailView', arg.validator);
+            io.emit('refreshPresupuestsForNewTreatmentDetailView', arg.validator);
         });
         socket.on('consultationCreatedCampusInterface', (arg) => {
             io.emit('createdConsultationInCampus', arg);
@@ -57,6 +59,10 @@ module.exports = (io) => {
             io.emit('refreshHistoryForHistoryView', arg.validatorCampus);
             io.emit('refreshHistoryForAgendaView', arg.validatorCampus);
         });
+        socket.on('paymentCreatedCampusInterface', (arg) => {
+            io.emit('createdPaymentInCampus', arg);
+            io.emit('refreshPaymentForConsultationDetailView', arg.validatorConsultation);
+        });
 
         //Update
         socket.on('eventUpdatedCampusInterfaceFromAgenda', (arg) => {
@@ -66,6 +72,7 @@ module.exports = (io) => {
         socket.on('presupuestUpdatedCampusInterface', (arg) => {
             io.emit('updatedPresupuestInCampus', arg);
             io.emit('refreshPresupuestsForConsultationDetailView', arg.validator);
+            io.emit('refreshPresupuestsForNewTreatmentDetailView', arg.validator);
             io.emit('updatedPresupuestInCampusForPresupuestDialog', arg.validatorPresupuest);
         });
         socket.on('treatmentDetailUpdatedCampusInterface', (arg) => {
@@ -120,6 +127,10 @@ module.exports = (io) => {
             io.emit('updatedDoctorImportantInfoInCampusForTreatmentAppointmentDialog', arg.validatorPersonData);
             io.emit('refreshHistoryForPatientProfileView', arg.validator);
             io.emit('refreshHistoryForAgendaViewClinic', arg.validator);
+        });
+        socket.on('paymentUpdatedCampusInterface', (arg) => {
+            io.emit('updatedPaymentInCampus', arg);
+            io.emit('refreshPaymentForConsultationDetailView', arg.validatorConsultation);
         });
     });
 }

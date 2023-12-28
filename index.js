@@ -39,6 +39,7 @@ const TreatmentDetailRoutes = require("./routes/treatmentDetailRoutes");
 const TreatmentAppointmentRoutes = require("./routes/treatmentAppointmentRoutes");
 const EventRoutes = require("./routes/eventRoutes");
 const ClinicPersonDataRoutes = require("./routes/clinicPersonDataRoutes");
+const PaymentRoutes = require("./routes/paymentRoutes");
 app.use("/api/users", UserRoutes);
 app.use("/api/clinics", ClinicRoutes);
 app.use("/api/personData", PersonDataRoutes);
@@ -55,6 +56,7 @@ app.use("/api/treatmentDetails", TreatmentDetailRoutes);
 app.use("/api/treatmentAppointments", TreatmentAppointmentRoutes);
 app.use("/api/events", EventRoutes);
 app.use("/api/clinicsPersonData", ClinicPersonDataRoutes);
+app.use("/api/payments", PaymentRoutes);
 
 app.get("/test-route", (req, res) => {
     return res.status(200).json({
