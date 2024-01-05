@@ -40,6 +40,7 @@ const TreatmentAppointmentRoutes = require("./routes/treatmentAppointmentRoutes"
 const EventRoutes = require("./routes/eventRoutes");
 const ClinicPersonDataRoutes = require("./routes/clinicPersonDataRoutes");
 const PaymentRoutes = require("./routes/paymentRoutes");
+const ImageRoutes = require("./routes/imageRoutes");
 app.use("/api/users", UserRoutes);
 app.use("/api/clinics", ClinicRoutes);
 app.use("/api/personData", PersonDataRoutes);
@@ -57,6 +58,7 @@ app.use("/api/treatmentAppointments", TreatmentAppointmentRoutes);
 app.use("/api/events", EventRoutes);
 app.use("/api/clinicsPersonData", ClinicPersonDataRoutes);
 app.use("/api/payments", PaymentRoutes);
+app.use("/api/images", ImageRoutes);
 
 app.get("/test-route", (req, res) => {
     return res.status(200).json({
