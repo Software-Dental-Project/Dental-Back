@@ -1,11 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const PaymentSchema = Schema({
-    consultation: {
-        type: Schema.ObjectId,
-        ref: "Consultation"
-    },
-    quantity: {
+    total: {
         type: Number,
         required: true
     },
@@ -13,16 +9,35 @@ const PaymentSchema = Schema({
         type: String,
         required: true
     },
-    comission: {
-        type: Number,
+    date: {
+        type: Date,
         required: true
     },
-    total: {
+    type: {
+        type: String,
+        required: true
+    },
+    campus: {
+        type: Schema.ObjectId,
+        ref: "Campus"
+    },
+    //Ingreso
+    consultation: {
+        type: String
+    },
+    quantity: {
+        type: Number
+    },
+    comission: {
         type: Number
     },
     image: {
         type: String
-    }
+    },
+    //Egreso
+    reason: {
+        type: String
+    },
 });
 
 module.exports = model("Payment", PaymentSchema, "payments");

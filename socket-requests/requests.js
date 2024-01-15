@@ -62,6 +62,7 @@ module.exports = (io) => {
         socket.on('paymentCreatedCampusInterface', (arg) => {
             io.emit('createdPaymentInCampus', arg);
             io.emit('refreshPaymentForConsultationDetailView', arg.validatorConsultation);
+            io.emit('refreshPaymentForFinanceView', arg.payment.campus.user);
         });
         socket.on('imageCreatedCampusInterface', (arg) => {
             io.emit('createdImageInCampus', arg);
@@ -135,6 +136,7 @@ module.exports = (io) => {
         socket.on('paymentUpdatedCampusInterface', (arg) => {
             io.emit('updatedPaymentInCampus', arg);
             io.emit('refreshPaymentForConsultationDetailView', arg.validatorConsultation);
+            io.emit('refreshPaymentForFinanceView', arg.payment.campus.user);
         });
         socket.on('imageUpdatedCampusInterface', (arg) => {
             io.emit('updatedImageInCampus', arg);

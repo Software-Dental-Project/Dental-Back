@@ -14,7 +14,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.post("/", PaymentController.create);
+router.post("/income", check.auth, PaymentController.createIncome);
+router.post("/outcome", check.auth, PaymentController.createOutcome);
 router.get("/list", PaymentController.list);
 router.get("/myPaymentsClinicByCampus", check.auth, PaymentController.myPaymentsClinicByCampus);
 router.put("/", PaymentController.editPayment);
